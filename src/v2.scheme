@@ -1,0 +1,231 @@
+(define (append a b)
+  (if (pair? a)
+      (cons (first a) (append (rest a) b))
+      b))
+
+(define (for-loop i0 i1 di fn)
+  (define (for-loop-r i0 i1 di fn i)
+    (if (< i i1) (begin (fn i) (for-loop-r i0 i1 di fn (+ i di)))))
+  (for-loop-r i0 i1 di fn i0))
+
+
+(define (wrap-native-objects x)
+  (cond ((image-source? x) (image-source-native-wrap x))
+	((image? x) (image-native-wrap x))
+	(else x)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; image
+
+(define (image-native-wrap im)
+  (object-create ((_im im))
+		 (lambda (message . args)
+		   (wrap-native-objects
+		    (apply image-native (append (list message _im) args))))))
+
+(define (image-create-from-file path)
+  (wrap-native-objects (image-native 'create-from-file path)))
+
+(define (image-create width height rgb)
+  (wrap-native-objects (image-native 'create width height rgb)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; image-source
+
+(define (image-source-native-wrap is)
+  (object-create ((_is is))
+		 (lambda (message . args)
+		   (case message
+		     (else (wrap-native-objects
+			    (apply image-source-native (append (list message _is) args))))))))
+
+; trim an existing movie, skipping to frame 'idx0', and keeping 'length' frames.
+(define (image-source-trim idx0 length is)
+  (letrec ((_is is) (_idx0 idx0) (_length length))
+    (lambda (message . args)
+      (case message
+	((length) (min _length (- (_is 'length) _idx0)))
+	((get-frame) (_is 'get-frame (+ _idx0 (first args))))
+	))))
+
+; load a movie using a folder full of ppm files living in dir 'path'
+(define (image-source-create-from-path path)
+  (wrap-native-objects (image-source-native 'create-from-path path)))
+
+; duplicate a single frame 'length' times.
+(define (image-source-create-from-image len im)
+  (lambda (message . args)
+    (case message
+      ((length) len)
+      ((get-frame) im)
+      )))
+
+; concatenate the two image sources
+(define (image-source-cat is0 is1)
+  (lambda (message . args)
+    (case message
+      ((length) (+ (is0 'length) (is1 'length)))
+      ((get-frame) (if (< (first args) (is0 'length))
+		       (is0 'get-frame (first args))
+		       (is1 'get-frame (- (first args) (is0 'length)))))
+)))
+
+; create a new image source that contains is0 transitioning into is1
+; with a variable-length cross-fade (that consumes images from both sources).
+(define (image-source-crossfade duration is0 is1)
+  (define (blend frac im0 im1)
+;    (output frac)
+    ((im0 'multiply (- 1 frac)) 'add (im1 'multiply frac))
+    )
+
+  (lambda (message . args)
+    (case message
+      ((length) (+ (is0 'length) (is1 'length) (- duration)))
+      ((get-frame) (letrec ((idx (first args))
+			    (len0 (is0 'length))
+			    (len1 (is1 'length))
+			    (mark (- len0 duration)))
+
+		     (cond ((< idx mark) (is0 'get-frame idx))
+			   ((> idx len0) (is1 'get-frame (- idx mark)))
+			   (else (blend (/ (- idx mark) duration)
+					(is0 'get-frame idx)
+					(is1 'get-frame (- idx mark)))))
+)))))
+
+(define (image-source-slide-left duration is0 is1)
+  (define (blend frac im0 im1)
+    (output frac)
+    (((image-create (im0 'get-width) (im0 'get-height) "#000000")
+      'draw-image (- (* frac (im0 'get-width))) 0 im0)
+     'draw-image (* (- 1 frac) (im0 'get-width)) 0 im1)
+    )
+
+  (lambda (message . args)
+    (case message
+      ((length) (+ (is0 'length) (is1 'length) (- duration)))
+      ((get-frame) (let ((idx (first args)))
+		     (cond ((< idx (- (is0 'length) duration)) (is0 'get-frame idx))
+			   ((> idx (is0 'length))(is1 'get-frame (- idx (is0 'length))))
+			   (else (blend (/ (- idx (- (is0 'length) duration)) duration)
+					(is0 'get-frame idx)
+					(is1 'get-frame (- idx (is0 'length)))))
+		     ))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; user code below here
+(define (make-progress-bar width height mark alpha r0 g0 b0 r1 g1 b1)
+  (define (make-progress-bar-pixel im width x mark alpha r0 g0 b0 r1 g1 b1)
+    (letrec ((frac0 (/ 1.0 (+ 1 (exp (* (- alpha) (- x mark))))))
+	     (frac1 (- 1 frac0)))
+
+      (im 'draw-pixel x 0
+	  (+ (* r0 frac1) (* r1 frac0))
+	  (+ (* g0 frac1) (* g1 frac0))
+	  (+ (* b0 frac1) (* b1 frac0)))
+      ))
+
+
+  (define (make-progress-bar-1 width mark alpha r0 g0 b0 r1 g1 b1)
+    (let ((_im (image-create width 1 "#0000ff")))
+      (for-loop 0 width 1
+		(lambda (x)
+		  (make-progress-bar-pixel _im width x mark alpha r0 g0 b0 r1 g1 b1)
+		  ))
+      _im))
+
+
+  ((make-progress-bar-1 width mark alpha r0 g0 b0 r1 g1 b1) 'scale width height)
+)
+
+(define (image-source-progress-bar y height r0 g0 b0 r1 g1 b1 is)
+;  (output "create " (is 'length) "\n")
+  (lambda (message . args)
+;    (output "message " message)
+    (case message
+      ((get-frame)
+       (letrec ((im (is 'get-frame (first args)))
+		(mark (/ (* (im 'get-width) (first args)) (is 'length)))
+		(alpha (/ 1.0 (/ (im 'get-width) (is 'length))))
+		(pb (make-progress-bar (im 'get-width) height mark alpha r0 g0 b0 r1 g1 b1))
+		)
+	 (im 'draw-image 0 y pb)))
+      ((length) (is 'length))
+      (else (apply is (append (list message) args))))))
+
+(define (image-source-matte width height rgb is)
+  ; first define a function that mattes a single image
+  (define (image-matte im width height rgb)
+    (if (and (eq? width (im 'get-width))
+	     (eq? height (im 'get-height)))
+	im
+	(let ((fixed_im (image-create width height rgb))
+	      (xoff (/ (- width (im 'get-width)) 2))
+	      (yoff (/ (- height (im 'get-height)) 2)))
+	  (fixed_im 'draw-image xoff yoff im))))
+
+  ; now, our object
+  (lambda (message . args)
+    (case message
+      ((get-frame) (image-matte (is 'get-frame (first args)) width height rgb))
+
+      (else (apply is (append (list message) args))))))
+
+(define (image-source-scale width height is)
+  (lambda (message . args)
+      (case message
+	((get-frame) ((is 'get-frame (first args)) 'scale width height))
+	(else (apply is (append (list message) args))))))
+
+; only output every Nth frame.
+(define (image-source-decimate-frames n is)
+  (lambda (message . args)
+      (case message
+	((get-frame) (is 'get-frame (* n (first args))))
+	((length) (floor (/ (is 'length) n)))
+	)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (dump-video is)
+  (for-loop 0 (is 'length) 1
+	    (lambda (idx)
+	      (output "\nframe " idx " / " (is 'length) "\n")
+	      ((is 'get-frame idx) 'output))))
+
+(define output-width 1920)
+(define output-height 1080)
+(define fps 30)
+
+(define vid (image-source-progress-bar 0 4 255 0 0 0 0 0
+				       (image-source-create-from-path "/home/ebolson/pkvid/src/movie")))
+
+(define (crossfade-all length lst)
+  (if (pair? (rest lst))
+      (image-source-crossfade length (first lst) (crossfade-all length (rest lst)))
+      (first lst)
+      ))
+
+(define (easy-slide duration path)
+  (image-source-progress-bar 0 4 255 0 0 0 0 0
+			     (image-source-matte output-width output-height "#000000"
+						 (image-source-create-from-image duration (image-create-from-file path)))))
+
+(define script (crossfade-all 30 (list (easy-slide 200 "original-1.ppm")
+				       (easy-slide 200 "original-2.ppm")
+				       vid
+				       (easy-slide 200 "original-3.ppm")
+				       (easy-slide 200 "original-4.ppm")
+				       (easy-slide 200 "original-5.ppm")
+				       (easy-slide 200 "original-6.ppm")
+				       (easy-slide 200 "original-7.ppm")
+				       (easy-slide 200 "original-8.ppm")
+				       (easy-slide 200 "original-9.ppm")
+				       (image-source-create-from-image 200 (image-create 1920 1080 "#000000"))
+				       )))
+
+(define a (easy-slide 60 "original-1.ppm"))
+(define b (easy-slide 100 "original-2.ppm"))
+(define ab (image-source-crossfade 30 a b))
+(define abab (crossfade-all 30 (list a b a b)))
+
+(dump-video (image-source-scale 1920 1080 (image-source-decimate-frames 15 script)))

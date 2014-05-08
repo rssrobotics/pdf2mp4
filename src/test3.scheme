@@ -1,0 +1,9 @@
+(define (fact x) (if (< x 1) 1 (* x (fact (- x 1)))))
+(fact 4)
+
+(define (fibb x) (if (< x 2) 1 (+ (fibb (- x 1)) (fibb (- x 2)))))
+(fibb 6)
+
+fibb
+
+"abc"

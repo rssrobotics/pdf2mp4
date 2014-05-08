@@ -1,0 +1,6 @@
+(define (a)
+  (let ((foo 0))
+    (lambda (x . args) args)
+    ))
+
+((a) 5 1 2 3)

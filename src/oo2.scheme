@@ -1,0 +1,13 @@
+(define (make-test v)
+  (let ((_v v))
+    (lambda (message . args)
+      (apply (case message
+	       ((mul) (lambda (x) (* x _v)))
+	       ((set) (lambda (x) (set! _v x)))
+	       (else (error "ack")))
+	     args))))
+
+(define foo (make-test 7))
+(foo 'mul 3)
+(foo 'set 5)
+(foo 'mul 3)

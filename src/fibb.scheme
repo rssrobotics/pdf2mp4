@@ -1,0 +1,8 @@
+(define (fibb x) (if (< x 2) 1 (+ (fibb (- x 1)) (fibb (- x 2)))))
+
+(fibb 8)
+(fibb 8)
+(fibb 8)
+(fibb 8)
+(fibb 8)
+(fibb 8)

@@ -1,0 +1,39 @@
+(define (make-simple-object)
+  (let ((my-var 0))
+    (define init
+      (lambda ()
+	(set! my-var 0)
+	my-var))
+    (define my-add
+      (lambda (x)
+	(set! my-var (+ my-var x))
+	my-var))
+    (define get-my-var
+      (lambda ()
+	my-var))
+    (define my-display
+      (lambda ()
+	(newline)
+	(display "My Var is:")
+	(display my-var)
+	(newline)))
+    (lambda (message . args)
+      (apply (case message
+	       ((init) init)
+	       ((my-add) my-add)
+	       ((my-display) my-display)
+	       ((get-my-var) get-my-var)
+	       (else (error "Unknown Method!")))
+	     args))))
+
+(define a (make-simple-object))
+(define b (make-simple-object))
+
+a
+
+(a 'init)
+(b 'init)
+(a 'my-add 3)
+(a 'my-add 4)
+(a 'get-my-var)
+(b 'get-my-var)

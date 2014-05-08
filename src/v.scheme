@@ -1,0 +1,179 @@
+; two basic types: <image> and <image-source>
+;
+; both implement a message-passing protocol; some are handled natively, others
+; in pure Scheme. E.g.,
+;
+; (object 'message args)
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; <image_source>
+;
+;   (<image-source> 'get-image idx) => [image]
+;
+;   (<image-source> 'length) => 15  (total number of frames)
+;
+;   (<image-source> 'trim idx0 length) => #t
+;
+; native functions
+;
+;   (image-source-create-from-directory "path") => <image-source>
+;
+;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; <transition>
+;
+;   (<transition> 'duration) => 10 (frames)
+;
+;   (<transition 'blend idx <image0> <image1>) => <image>
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; <image>
+;
+;   (<image> 'scale width height) => <image>
+;
+;   (<image> 'draw-image xoff yoff <image>) => #t
+;
+;   (<image> 'fill-rect x0 y0 x1 y1 "#rrggbb") => #t
+;
+;   (<image> 'multiply .25) => #t
+;
+;   (<image> 'add <image>) => #t
+;
+;   (<image> 'clone) => <image>
+;
+;   (<image> 'get-width) => 640
+;
+;   (<image> 'get-height) => 480
+;
+;   (<image> 'write-pnm "path") => #t
+;
+;   (<image> 'crop x0 y0 x1 y1) => <image>
+;
+; native functions
+;
+;   (image-create-from-file "path") => <image>
+;
+;   (image-create width height "#rrggbb") => <image>
+
+
+
+(define (transition-null-create)
+  (lambda (message . args)
+    (apply (case message
+	     ((duration) (lambda() 0))
+	     ((blend) (lambda (idx im0 im1) #f))
+	     ((is-transition) (lambda() #t))
+	     (else (lambda() #f)))
+	   args)))
+
+(define (image-source-cat-compute-size lst)
+  (if (null? lst)
+      0
+      (if ((first lst) 'is-source)
+	  (+ ((first lst) 'size) (image-source-cat-compute-size (rest lst)))
+	  (- (image-source-cat-compute-size (rest lst)) ((first lst) 'duration))))
+  )
+
+(define (image-source-cat lst)
+  (let ((_lst lst)
+	(_size (image-source-cat-compute-size lst)))
+    (lambda (message . args)
+      (apply (case message
+	       ((get-image) (lambda(idx) _image))
+	       ((size) (lambda() _size))
+	       ((is-source) (lambda() #t))
+	       (else (lambda() #f)))
+	     args))))
+
+(define (image-source-dup image size)
+  (let ((_image image)
+	(_size size))
+    (lambda (message . args)
+      (apply (case message
+	       ((get-image) (lambda(idx) _image))
+	       ((size) (lambda() _size))
+	       ((is-source) (lambda() #t))
+	       (else (lambda() #f)))
+	     args))))
+
+(define (image-source-trim src idx0 size)
+  (let ((_src src)
+	(_idx0 idx0)
+	(_size size))
+    (lambda (message . args)
+      (apply (case message
+	       ((get-image) (lambda(idx) (_src 'get-image (+ _idx0 idx))))
+	       ((size) (lambda() _size))
+	       ((is-source) (lambda() #t))
+	       (else (lambda() #f)))
+	     args))))
+
+(define (image-source-create-dummy size)
+  (let ((_size size))
+    (lambda (message . args)
+      (apply (case message
+	       ((get-image) (lambda(idx) idx))
+	       ((size) (lambda() _size))
+	       ((is-source) (lambda() #t))
+	       (else (lambda() #f)))
+	     args))))
+
+(define v0 (image-source-create-dummy 100))
+(define v1 (image-source-create-dummy 50))
+(define v2 (image-source-create-dummy 10))
+
+(define v012 (image-source-cat (list v0
+				     (transition-null-create)
+				     v1
+				     (transition-null-create)
+				     v2)))
+(v0 'get-image 5)
+(v0 'size)
+
+(define v1 (image-source-trim v0 10 10))
+(v1 'get-image 5)
+(v1 'size)
+
+(v012 'size)
+
+(define (append a b)
+  (if (pair? a)
+      (cons (first a) (append (rest a) b))
+      b))
+
+(append (list 'a 'b) (list 'c 'd))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; if the argument is an <image>, wrap it in our native object
+; wrapper. Else, return the value.
+(define (image-native-maybe-wrap x)
+  (if (image? x) (image-native-wrap x) x))
+
+; Given an <image> return an object which implements the standard
+; scheme object-oriented message passing system in terms of our native
+; image function.
+(define (image-native-wrap image)
+  (let ((_im image))
+    (lambda (message . args)
+      (image-native-maybe-wrap (apply image-native (append (list message _im) args))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define (image-create-from-file path)
+  (object-create (image-native 'create-from-file path)
+		 image-native-wrap))
+
+
+(define (image-create width height rgb)
+  (image-native-wrap (image-native 'create width height rgb)))
+
+(define s0 (image-create-from-file "original-1.ppm"))
+
+(define red (image-create 1920 1080 "#ff0000"))
+
+;(red 'draw-image 100 50 (s0 'scale 400 300))
+;(red 'write-pnm "/tmp/foo.pnm")
+
+
+;(define still (image-create 600 400 "#ff0000"))
+;(still 'write-pnm "/tmp/foo.pnm")

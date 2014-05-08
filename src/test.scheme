@@ -1,0 +1,98 @@
+(assert (= 1 1))
+(assert (not (= 1 2)))
+(assert (= (+ 2 3 4) 9))
+(assert (= (* 2 3 4) 24))
+(assert (= (/ 60 2 3) 10))
+(assert (< 1 2))
+(assert (> 2 1))
+(assert (= (max 3 5 7) 7))
+(assert (= (min 3 5 7) 3))
+(assert (= (- 5) -5))
+(assert (= (- 5 7 2) -4))
+(assert (eq? #t (boolean? #t)))
+(assert (eq? #t (boolean? #f)))
+(assert (eq? #t (real? 5)))
+(assert (eq? #f (real? 'a)))
+(assert (and 1 1 1))
+(assert (not (and #t #f #t)))
+(assert (or #f #f 1))
+(assert (not (or #f #f #f)))
+(list 'a 'b)
+(car (list 'a 'b))
+(cdr (list 'a 'b))
+(cons 'a 'b)
+(cdr (cons 'a 'b))
+(assert (zero? 0 0 0 0))
+(assert (not (zero? 0 1 0)))
+
+(define (addone x) (+ x 1))
+(assert (= (addone 5) 6))
+
+(define (addtwo x) (addone (addone x)))
+(assert (= (addtwo 5) 7))
+
+(define (make-add-some n) (lambda (x) (+ x n)))
+(assert (= ((make-add-some 5) 3) 8))
+
+(assert (if #f #f #t))
+
+(assert (eq? 'a (cond ((> 3 2) 'a)
+		      ((< 3 2) 'b))))
+
+(assert (eq? 'c (cond ((> 1 2) 'a)
+		      ((< 3 2) 'b)
+		      (else 'c))))
+
+(assert (eq? 'composite (case (* 2 3)
+			  ((2 3 5 7) 'prime)
+			  ((1 4 6 8 9) 'composite))))
+
+(assert (= 3 (begin (+ 5 1)
+		    (+ 1 2))))
+
+(assert (eq? 5 (if #t 5)))
+
+(assert (eq? 7 (if #f 5 7)))
+
+(define x 1)
+
+(assert (= 2 (let ((y (lambda () x))
+		   (x 100)
+		   (z (lambda () x)))
+	       (+ (y) (z)))))
+
+(let* ((y (lambda () x))
+       (x 100)
+       (z (lambda () x)))
+  (+ (y) (z)))
+
+(letrec ((y (lambda () x))
+	 (x 100)
+	 (z (lambda () x)))
+  (+ (y) (z)))
+
+(assert (= 200 (letrec ((y (lambda () x))
+			(x 100)
+			(z (lambda () x)))
+		 (+ (y) (z)))))
+
+(assert (= 101 (let* ((y (lambda () x))
+		      (x 100)
+		      (z (lambda () x)))
+		 (+ (y) (z)))))
+
+
+(define a 'abc)
+
+(assert (eq? a 'abc))
+
+(define b "abc")
+
+(assert (eq? b "abc"))
+
+4
+
+(define f '(4 . 5))
+f
+
+(< (+ 2 1) (+ 1 1))

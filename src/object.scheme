@@ -1,0 +1,16 @@
+
+;(object-create (('a 5)
+;		('b 7))
+;	       (lambda (message . args)
+;		 (case message
+;		   ('negatea (- a))
+;		   )))
+
+(define a (letrec ((x 5)
+		   (y 7))
+	    (lambda (message . args)
+	      (case message
+		('negatex (- 5))
+		))))
+
+(a 'negatex)

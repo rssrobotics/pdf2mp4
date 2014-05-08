@@ -1,0 +1,13 @@
+(define (append a b)
+  (if (pair? a)
+      (cons (first a) (append (rest a) b))
+      b))
+
+(define (map fn lst)
+  (if (pair? lst)
+      (append (list (fn (first lst))) (map fn (rest lst)))
+      lst))
+
+(define (sq x) (* x x))
+
+(map sq (list 1 2 #f 4 5))
