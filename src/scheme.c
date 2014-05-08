@@ -693,7 +693,7 @@ static void env_mark(sobject_t *env, int32_t mark)
             char *name = env->u.env.hash[i].name;
             sobject_t *value = env->u.env.hash[i].value;
 
-            if (name != NULL)
+            if (name != NULL && value != NULL)
                 value->mark(value, mark);
         }
     }
@@ -986,6 +986,44 @@ static sobject_t* builtin_greaterthan(scheme_t *scheme, sobject_t *env, sobject_
     return SOBJECT_TRUE;
 }
 
+static sobject_t* builtin_lessthanequal(scheme_t *scheme, sobject_t *env, sobject_t *head)
+{
+    sobject_t *tmp = scheme_first(scheme, head);
+    SCHEME_TYPE_CHECK(scheme, tmp, "REAL");
+
+    double acc = tmp->u.real.v;
+    head = scheme_rest(scheme, head);
+
+    for ( ; head != NULL; head = scheme_rest(scheme, head)) {
+        sobject_t *obj = scheme_first(scheme, head);
+        SCHEME_TYPE_CHECK(scheme, obj, "REAL");
+        if (obj->u.real.v < acc)
+            return SOBJECT_FALSE;
+        acc = obj->u.real.v;
+    }
+
+    return SOBJECT_TRUE;
+}
+
+static sobject_t* builtin_greaterthanequal(scheme_t *scheme, sobject_t *env, sobject_t *head)
+{
+    sobject_t *tmp = scheme_first(scheme, head);
+    SCHEME_TYPE_CHECK(scheme, tmp, "REAL");
+
+    double acc = tmp->u.real.v;
+    head = scheme_rest(scheme, head);
+
+    for ( ; head != NULL; head = scheme_rest(scheme, head)) {
+        sobject_t *obj = scheme_first(scheme, head);
+        SCHEME_TYPE_CHECK(scheme, obj, "REAL");
+        if (obj->u.real.v > acc)
+            return SOBJECT_FALSE;
+        acc = obj->u.real.v;
+    }
+
+    return SOBJECT_TRUE;
+}
+
 static sobject_t* builtin_multiply(scheme_t *scheme, sobject_t *env, sobject_t *head)
 {
     double acc = 1;
@@ -1169,6 +1207,8 @@ void scheme_env_setup_basic(scheme_t *scheme, sobject_t *env)
     scheme_env_add_method(scheme, env, "=", builtin_equals);
     scheme_env_add_method(scheme, env, ">", builtin_greaterthan);
     scheme_env_add_method(scheme, env, "<", builtin_lessthan);
+    scheme_env_add_method(scheme, env, ">=", builtin_greaterthanequal);
+    scheme_env_add_method(scheme, env, "<=", builtin_lessthanequal);
     scheme_env_add_method(scheme, env, "*", builtin_multiply);
     scheme_env_add_method(scheme, env, "/", builtin_divide);
     scheme_env_add_method(scheme, env, "min", builtin_min);

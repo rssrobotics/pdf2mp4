@@ -31,7 +31,7 @@ $doc = json_decode($json, 1);
 
 $fd = fopen($PROJECT_DIR."/project.scheme", "w");
 
-$fps = 30;
+$fps = 1;
 
 $h = 320;
 $w = intval(1920*$h/1080);
@@ -45,22 +45,22 @@ for ($i = 0; $i < count($doc["slides"]); $i++) {
     fprintf($fd, "      (image-create-from-file \"$PROJECT_DIR/".$slide["thumb"]."\"))))\n");
 
     if ($slide["progress"])
-        fprintf($fd, "(set! slide_$i (image-source-progress-bar 4 4 255 0 0 0 0 0 slide_$i))\n");
+        fprintf($fd, "(set! slide_$i (image-source-progress-bar -1 4 255 0 0 0 0 0 slide_$i))\n");
 
     fprintf($fd, "\n");
 }
 
 fprintf($fd, "\n");
 
-fprintf($fd, "(define vid (crossfade-all 20 (list\n");
+fprintf($fd, "(define vid (crossfade-all ".intval(0.75*$fps)." (list\n");
 
 for ($i = 0; $i < count($doc["slides"]); $i++) {
     fprintf($fd, "                               slide_$i\n");
 }
 
-fprintf($fd, "                               (image-source-create-from-image 200 (image-create $w $h \"#000000\")))))\n");
+fprintf($fd, "                               (image-source-create-from-image ".intval(2*$fps)." (image-create $w $h \"#000000\")))))\n");
 fprintf($fd, "\n");
-fprintf($fd, "(set! vid (image-source-decimate-frames ".intval($fps/2)." tmp))\n");
+//fprintf($fd, "(set! vid (image-source-decimate-frames ".intval($fps/2)." tmp))\n");
 fprintf($fd, "\n");
 if ($doc["progress"])
     fprintf($fd, "(set! vid (image-source-progress-bar 0 4 255 0 0 0 0 0 vid))\n");
@@ -75,5 +75,10 @@ while (($s = fgets($fd)) != NULL)
     print $s;
 fclose($fd);
 
+$tmp = tempnam("/tmp", "pdf2mp4");
 
+$cmdline = "./vidscheme vidscheme.scheme $PROJECT_DIR/project.scheme | avconv -y -r $fps -f image2pipe -vcodec ppm -i - -b 2M $tmp.mp4";
+
+print "<br><tt>";
+print $cmdline;
 ?>

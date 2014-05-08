@@ -74,7 +74,6 @@
 ; with a variable-length cross-fade (that consumes images from both sources).
 (define (image-source-crossfade duration is0 is1)
   (define (blend frac im0 im1)
-;    (output frac)
     ((im0 'multiply (- 1 frac)) 'add (im1 'multiply frac))
     )
 
@@ -87,7 +86,7 @@
 			    (mark (- len0 duration)))
 
 		     (cond ((< idx mark) (is0 'get-frame idx))
-			   ((> idx len0) (is1 'get-frame (- idx mark)))
+			   ((>= idx len0) (is1 'get-frame (- idx mark)))
 			   (else (blend (/ (- idx mark) duration)
 					(is0 'get-frame idx)
 					(is1 'get-frame (- idx mark)))))
@@ -139,9 +138,7 @@
 )
 
 (define (image-source-progress-bar y height r0 g0 b0 r1 g1 b1 is)
-;  (output "create " (is 'length) "\n")
   (lambda (message . args)
-;    (output "message " message)
     (case message
       ((get-frame)
        (letrec ((im (is 'get-frame (first args)))

@@ -371,6 +371,9 @@ static sobject_t *builtin_image_native(scheme_t *scheme, sobject_t *env, sobject
         return scheme_image_create(scheme, s);
     }
 
+    // negative values of y reference the bottom of the screen. E.g.,
+    // 'draw-image 0 -1 im2
+    // will draw im2 aligned with the bottom of the screen
     if (!strcmp(msg, "draw-image")) {
         SCHEME_TYPE_CHECK(scheme, scheme_first(scheme, head), "REAL");
         SCHEME_TYPE_CHECK(scheme, scheme_second(scheme, head), "REAL");
@@ -378,12 +381,17 @@ static sobject_t *builtin_image_native(scheme_t *scheme, sobject_t *env, sobject
 
         int x0 = (int) scheme_first(scheme, head)->u.real.v;
         int y0 = (int) scheme_second(scheme, head)->u.real.v;
+
         sobject_t *tmp = scheme_env_lookup(scheme, scheme_third(scheme, head)->u.object.env, "_im");
 
         assert(tmp != NULL);
 
         image_u8x3_t *out = image_u8x3_copy(im);
         image_u8x3_t *im2 = (image_u8x3_t*) tmp->u.other.impl;
+
+        if (y0 < 0) {
+            y0 = im->height + y0 - im2->height + 1;
+        }
 
         int x2min = imax(0, -x0);
         int x2max = imin(im2->width, im->width-x0);
@@ -461,6 +469,9 @@ int main(int argc, char *argv[])
 
     for (int idx = 1; idx < argc; idx++) {
         zarray_t *toks = generic_tokenizer_tokenize_path(scheme->gt, argv[idx]);
+        if (toks == NULL)
+            continue;
+
         generic_tokenizer_feeder_t *feeder = generic_tokenizer_feeder_create(toks);
 
         while (generic_tokenizer_feeder_has_next(feeder)) {
