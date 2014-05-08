@@ -30,6 +30,7 @@ image_u8x3_t *image_u8x3_create(int width, int height);
 // force stride to be a multiple of 'alignment' bytes.
 image_u8x3_t *image_u8x3_create_alignment(int width, int height, int alignment);
 
+    image_u8x3_t *image_u8x3_create_from_file(const char *path);
     image_u8x3_t *image_u8x3_create_from_pnm(const char *path);
     int image_u8x3_write_pnm(const image_u8x3_t *im, const char *path);
 

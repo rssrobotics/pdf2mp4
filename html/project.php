@@ -15,7 +15,7 @@ do_footer();
 }
 
 $PROJECT_DIR = $PROJECTS_PATH."/".$key;
-$PROJECT_JSON = $PROJECT_DIR."/"."project.json";
+$PROJECT_JSON = $PROJECT_DIR."/"."json.txt";
 $PROJECT_URL = $PROJECTS_URL."/".$key;
 
 ?>
@@ -52,7 +52,7 @@ $PROJECT_URL = $PROJECTS_URL."/".$key;
       Total seconds: <span id=total_seconds>0</span><br>
       (RSS 2014 maximum 300)<br><br>
       Show overall progress bar: <input id=global_progress_bar type=checkbox><br><br>
-      Render preview video<br><br>
+<a href="render.php?key=<?php print $key?>&preview=1">Render preview video</a><br><br>
       Render final video<br><br>
     </div>
   </tr>
@@ -65,7 +65,7 @@ var project_url = "<?php echo $PROJECT_URL ?>";
 var key = "<?php echo $key ?>";
 
 <?php
-$fd = fopen($PROJECT_DIR."/json.txt", "r");
+$fd = fopen($PROJECT_JSON, "r");
 if (!$fd) {
   // new document
   print "doc_create(8);\n";

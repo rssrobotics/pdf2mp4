@@ -1,6 +1,6 @@
 <?php
 
-$PROJECTS_PATH="/var/www/html/projects";
+$PROJECTS_PATH="/var/www/pdf2mp4/html/projects";
 $PROJECTS_URL="http://localhost/projects";
 
 function do_header($name)

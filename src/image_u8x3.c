@@ -7,6 +7,7 @@
 
 #include "image_u8x3.h"
 #include "pnm.h"
+#include "string_util.h"
 
 // least common multiple of 32 (cache line) and 24 (stride needed for
 // 8byte-wide RGB processing). (It's possible that 24 would be enough).
@@ -133,9 +134,9 @@ image_u8x3_t *image_u8x3_create_from_png(const char *path)
 
     assert(bit_depth == 8);
 
-    if (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_GRAY) {
+    im = image_u8x3_create(width, height);
 
-        im = image_u8x3_create(width, height);
+    if (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_GRAY) {
 
         uint8_t *buf = malloc(width * height);
         png_bytep *row_pointers = malloc(sizeof(png_bytep) * height);
@@ -193,6 +194,17 @@ finish:
 
     fclose(fp);
     return im;
+}
+
+image_u8x3_t *image_u8x3_create_from_file(const char *path)
+{
+    if (str_ends_with(path, ".png"))
+        return image_u8x3_create_from_png(path);
+    if (str_ends_with(path, ".pnm"))
+        return image_u8x3_create_from_pnm(path);
+    printf(__FILE__ "Unrecognized file type\n");
+    assert(0);
+    return NULL;
 }
 
 image_u8x3_t *image_u8x3_create_from_pnm(const char *path)

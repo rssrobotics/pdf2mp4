@@ -229,7 +229,7 @@ static sobject_t *builtin_image_native(scheme_t *scheme, sobject_t *env, sobject
     // constructor messages go first.
     if (!strcmp(msg, "create-from-file")) {
         SCHEME_TYPE_CHECK(scheme, scheme_second(scheme, head), "STRING");
-        image_u8x3_t *im = image_u8x3_create_from_pnm(scheme_second(scheme, head)->u.string.v);
+        image_u8x3_t *im = image_u8x3_create_from_file(scheme_second(scheme, head)->u.string.v);
         return scheme_image_create(scheme, im);
     }
 
@@ -459,34 +459,27 @@ int main(int argc, char *argv[])
     scheme_env_add_method(scheme, env, "image?", builtin_image_q);
     scheme_env_add_method(scheme, env, "image-source?", builtin_image_source_q);
 
-    zarray_t *toks = generic_tokenizer_tokenize_path(scheme->gt, argv[1]);
-    generic_tokenizer_feeder_t *feeder = generic_tokenizer_feeder_create(toks);
+    for (int idx = 1; idx < argc; idx++) {
+        zarray_t *toks = generic_tokenizer_tokenize_path(scheme->gt, argv[idx]);
+        generic_tokenizer_feeder_t *feeder = generic_tokenizer_feeder_create(toks);
 
-    while (generic_tokenizer_feeder_has_next(feeder)) {
-        // note: expr and eval belong to the scheme object. They will
-        // be garbage collected as appropriate, or---at the latest--
-        // freed by scheme_destroy.
-        sobject_t *expr = scheme_read(scheme, feeder);
+        while (generic_tokenizer_feeder_has_next(feeder)) {
+            // note: expr and eval belong to the scheme object. They will
+            // be garbage collected as appropriate, or---at the latest--
+            // freed by scheme_destroy.
+            sobject_t *expr = scheme_read(scheme, feeder);
 
-        // at this point in time, the C pointer above is the ONLY
-        // reference to expr. It will be GC'd if scheme_
-/*        fprintf(stderr, "expr: ");
-        expr->to_string(expr, stderr);
-        fprintf(stderr, "\n");
-*/
-        sobject_t *eval = scheme_eval(scheme, env, expr);
+            // at this point in time, the C pointer above is the ONLY
+            // reference to expr. It will be GC'd if scheme_
+            sobject_t *eval = scheme_eval(scheme, env, expr);
 
-        (void) eval;
+            (void) eval;
+        }
 
-        /*      fprintf(stderr, "eval: ");
-        eval->to_string(eval, stderr);
-
-        fprintf(stderr, "\n");
-*/
+        generic_tokenizer_tokens_destroy(toks);
+        generic_tokenizer_feeder_destroy(feeder);
     }
 
-    generic_tokenizer_tokens_destroy(toks);
-    generic_tokenizer_feeder_destroy(feeder);
     scheme_destroy(scheme);
 
     SOBJECT_TRUE->destroy(SOBJECT_TRUE);

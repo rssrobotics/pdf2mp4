@@ -721,7 +721,7 @@ sobject_t *scheme_env_create(scheme_t *scheme, sobject_t *parent)
 // note: can return NULL. Returns the hash record in which the symbol
 // can be found (in this or in a parent environment). Returning the
 // record allows set! to be used without having to search again.
-inline struct scheme_env_record *scheme_env_lookup_hash(scheme_t *scheme, sobject_t *env, const char *s, int32_t hash)
+struct scheme_env_record *scheme_env_lookup_hash(scheme_t *scheme, sobject_t *env, const char *s, int32_t hash)
 {
     // does this environment have any mappings?
     if (env->u.env.hash_size) {

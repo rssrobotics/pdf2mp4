@@ -38,11 +38,11 @@ if (!move_uploaded_file($_FILES['pdffile']['tmp_name'], $PROJECT_PDF)) {
 ?>
 <h2>Your key</h2>
 
-<P>Your project has been assigned a unique 'key' which will give anyone who knows it access to your project.</P>
+<P>Your project has been assigned a unique 'key' which will give anyone who knows it access to your project. <B>If you lose this key, you will lose access to your project.</B></P>
 
 <P><b>Your key: </b><?php print $key ?>
 
-<P>You can also bookmark the next page, which will take you directly to your project.</P>
+<P>You can also bookmark the next page, whose URL contains your key. </P>
 
 <h2>Project creation status</h2>
 

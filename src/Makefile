@@ -22,7 +22,7 @@ pkvid: $(PKVID_OBJS)
 	gcc -o pkvid $(PKVID_OBJS) -lm
 
 %.o: %.c
-	gcc -c -std=gnu99 -Wall -g $< -O2
+	gcc -c -std=gnu99 -Wall -g $<
 
 clean:
 	rm -f *.o *~

@@ -43,6 +43,12 @@ P { margin : 0px 0px 1em 0px;
          background-color : #000000;
           }
 
+.thumb_selected {
+         padding: 5px;
+         margin: 5px;
+         background-color : #888800;
+          }
+
 /* thumb area includes the slide and the controls below it */
 #thumb_area {
 /*              width: 560px; */
@@ -68,5 +74,4 @@ P { margin : 0px 0px 1em 0px;
               }
 
 #status_label {
-                color: #ff3333;
                 }

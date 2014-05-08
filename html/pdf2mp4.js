@@ -61,9 +61,31 @@ function doc_restore(json_string)
     doc_save();
 }
 
-// serialize the document and push to the server
+var doc_save_triggered = 0;
+var doc_save_in_progress = 0;
+
+window.setInterval(function () {
+    if (doc_save_triggered && !doc_save_in_progress) {
+        doc_save_triggered = 0;
+        doc_save_real();
+        }
+}, 2000);
+
+// request a save in the near future
 function doc_save()
 {
+    var status_label = document.getElementById("status_label");
+    if (status_label)
+        status_label.innerHTML="<font color='#ff0000'>Save pending...</font><br>";
+
+    doc_save_triggered = 1;
+}
+
+// serialize the document and push to the server
+function doc_save_real()
+{
+    doc_save_in_progress = 1;
+
     var status_label = document.getElementById("status_label");
     if (status_label)
         status_label.innerHTML="Saving...";
@@ -80,13 +102,15 @@ function doc_save()
                                   status_label.innerHTML="Last save failed.";
                           } else {
                               if (status_label)
-                                  status_label.innerHTML="Saved ("+(new Date())+")";
+                                  status_label.innerHTML="Saved<br>"+(new Date()).toTimeString();
                           }
                       } catch (ex) {
                               if (status_label)
                                   status_label.innerHTML="Last save failed.";
 
                           alert("Error saving document: couldn't parse response "+xml.responseText);
+                      } finally {
+                          doc_save_in_progress = 0;
                       }
                   });
 }
@@ -94,6 +118,8 @@ function doc_save()
 // display a different slide in the thumbnail area, i.e., call this after setting doc.display_idx
 function doc_set_display_idx(idx)
 {
+    document.getElementById("slide_nav_"+doc.display_idx).className="thumb";
+
     idx = Math.min(doc.slides.length-1, idx);
     idx = Math.max(0, idx);
     doc.display_idx = idx;
@@ -104,6 +130,8 @@ function doc_set_display_idx(idx)
 
     var progress = document.getElementById("slide_progress_bar");
     progress.checked = doc.slides[doc.display_idx].progress;
+
+    document.getElementById("slide_nav_"+idx).className="thumb_selected";
 }
 
 function doc_recompute_total_seconds()
@@ -129,7 +157,7 @@ function doc_rebuild_gui()
         for (var i = 0; i < doc.slides.length; i++) {
             var slide = doc.slides[i];
 
-            slide_nav.innerHTML += "<img width="+(slide_nav.offsetWidth-40)+" class=thumb onclick='doc_set_display_idx("+i+")' src="+project_url+"/"+ slide.thumb + "><br>";
+            slide_nav.innerHTML += "<img id=slide_nav_"+i+" width="+(slide_nav.offsetWidth-40)+" class=thumb onclick='doc_set_display_idx("+i+")' src="+project_url+"/"+ slide.thumb + "><br>";
         }
     }
 
@@ -171,7 +199,7 @@ function doc_rebuild_gui()
         doc_save();
     }
 
-    document.getElementById("global_progress_bar").value = doc.progress;
+    document.getElementById("global_progress_bar").checked = doc.progress;
     document.getElementById("global_progress_bar").onclick = function() {
         doc.progress = document.getElementById("global_progress_bar").checked ? 1 : 0;
         doc_save();
