@@ -53,10 +53,13 @@ $totalseconds = 0;
 for ($i = 0; $i < count($doc["slides"]); $i++) {
     $slide = $doc["slides"][$i];
 
+    $slidepath = $PROJECT_DIR."/".$slide[$slideselector];
+
     fprintf($fd, "(define slide_$i \n");
     fprintf($fd, "  (image-source-matte $w $h \"#000000\"\n");
-    fprintf($fd, "    (image-source-create-from-image ".intval($fps*$slide["seconds"])."\n");
-    fprintf($fd, "      (image-create-from-file \"$PROJECT_DIR/".$slide[$slideselector]."\"))))\n");
+    fprintf($fd, "    (image-source-create-from-image-cache ".intval($fps*$slide["seconds"])." \"$slidepath\")))\n");
+//    fprintf($fd, "    (image-source-create-from-image ".intval($fps*$slide["seconds"])."\n");
+//    fprintf($fd, "      (image-create-from-file \"$PROJECT_DIR/".$slide[$slideselector]."\"))))\n");
 
     if ($slide["progress"])
         fprintf($fd, "(set! slide_$i (image-source-progress-bar -1 4 255 0 0 0 0 0 slide_$i))\n");

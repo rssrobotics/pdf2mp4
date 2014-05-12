@@ -60,6 +60,27 @@
       ((get-frame) im)
       )))
 
+
+(define (image-cache-create)
+	(letrec ((_im #f) (_path #f))
+	  (lambda (path)
+	    (if (eq? _path path)
+		_im
+		(begin (set! _path path)
+		       (set! _im (image-create-from-file path))
+		       _im)))))
+
+
+(define image-cache (image-cache-create))
+
+(define (image-source-create-from-image-cache len path)
+  (lambda (message . args)
+    (case message
+      ((length) len)
+      ((get-frame) (image-cache path))
+      )))
+
+
 ; concatenate the two image sources
 (define (image-source-cat is0 is1)
   (lambda (message . args)
