@@ -6,7 +6,7 @@ VIDSCHEME_OBJS = vidscheme.o image_u8x3.o string_util.o zarray.o pnm.o generic_t
 
 SCHEME_TEST_OBJS = scheme_test.o string_util.o zarray.o pnm.o generic_tokenizer.o freepool.o zhash.o scheme.o
 
-QUEUEWORKER_OBJS = queueworker.o getopt.o zhash.o zarray.o
+QUEUEWORKER_OBJS = queueworker.o getopt.o zhash.o zarray.o string_util.o
 
 all: scheme_test vidscheme queueworker
 
@@ -27,7 +27,7 @@ pkvid: $(PKVID_OBJS)
 	gcc -o pkvid $(PKVID_OBJS) -lm
 
 %.o: %.c
-	gcc -c -std=gnu99 -Wall -g $< -O2
+	gcc -c -std=gnu99 -Wall -g $<
 
 clean:
 	rm -f *.o *~

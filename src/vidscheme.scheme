@@ -143,7 +143,7 @@
       ((get-frame)
        (letrec ((im (is 'get-frame (first args)))
 		(mark (/ (* (im 'get-width) (first args)) (is 'length)))
-		(alpha (/ 1.0 (/ (im 'get-width) (is 'length))))
+		(alpha (/ 5 (/ (im 'get-width) (is 'length))))
 		(pb (make-progress-bar (im 'get-width) height mark alpha r0 g0 b0 r1 g1 b1))
 		)
 	 (im 'draw-image 0 y pb)))

@@ -38,4 +38,14 @@ function do_footer()
 	print "</html";
 }
 
+function str_ends_with($haystack, $needle)
+{
+    return $needle === "" || substr($haystack, -strlen($needle)) === $needle;
+}
+
+function str_starts_with($haystack, $needle)
+{
+    return $needle === "" || strpos($haystack, $needle) === 0;
+}
+
 ?>

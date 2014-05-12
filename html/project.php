@@ -53,7 +53,7 @@ $PROJECT_URL = $PROJECTS_URL."/".$key;
       (RSS 2014 maximum 300)<br><br>
       Show overall progress bar: <input id=global_progress_bar type=checkbox><br><br>
 <a href="render.php?key=<?php print $key?>&preview=1">Render preview video</a><br><br>
-      Render final video<br><br>
+<a href="render.php?key=<?php print $key?>&preview=0">Render final video (slow!)</a><br><br>
     </div>
   </tr>
 </table>

@@ -61,16 +61,6 @@ myflush();
 
 system("cd $PROJECT_DIR && pdftoppm -png -scale-to-x -1 -scale-to-y 320 $PROJECT_PDF pdfthumb");
 
-function str_ends_with($haystack, $needle)
-{
-    return $needle === "" || substr($haystack, -strlen($needle)) === $needle;
-}
-
-function str_starts_with($haystack, $needle)
-{
-    return $needle === "" || strpos($haystack, $needle) === 0;
-}
-
 $files = array();
 $dir = opendir($PROJECT_DIR);
 while (($file = readdir($dir)) !== false) {

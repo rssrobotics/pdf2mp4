@@ -2,9 +2,6 @@
 
 include("common.php");
 
-do_header("Project render");
-do_banner();
-
 $key = $_REQUEST["key"];
 
 if (strlen($key) != 40 || !preg_match("/^[a-z0-9]*$/", $key)) {
@@ -29,12 +26,35 @@ fclose($fd);
 
 $doc = json_decode($json, 1);
 
-$fd = fopen($PROJECT_DIR."/project.scheme", "w");
+if ($_REQUEST["preview"]==1) {
+    $fps = 1;
+    $h = 320;
+    $slideselector = "thumb";
+    $bitrate = "2M";
+    $task = "preview";
+    $outputpath = $PROJECT_DIR."/$task.mp4";
+    $outputurl = $PROJECT_URL."/$task.mp4";
+    $pri = 0;
+} else {
+    $fps = 30;
+    $h = 1080;
+    $slideselector = "slide";
+    $bitrate = "8M";
+    $task = "final";
+    $outputpath = $PROJECT_DIR."/$task.mp4";
+    $outputurl = $PROJECT_URL."/$task.mp4";
+    $timebonus = 0;
+    $pri = 1;
+}
 
-$fps = 1;
+chmod($PROJECT_DIR, 0777);
+unlink($outputpath);
 
-$h = 320;
 $w = intval(1920*$h/1080);
+
+/////////////////////////////////////////
+// write the output
+$fd = fopen($PROJECT_DIR."/project.scheme", "w");
 
 for ($i = 0; $i < count($doc["slides"]); $i++) {
     $slide = $doc["slides"][$i];
@@ -42,7 +62,7 @@ for ($i = 0; $i < count($doc["slides"]); $i++) {
     fprintf($fd, "(define slide_$i \n");
     fprintf($fd, "  (image-source-matte $w $h \"#000000\"\n");
     fprintf($fd, "    (image-source-create-from-image ".intval($fps*$slide["seconds"])."\n");
-    fprintf($fd, "      (image-create-from-file \"$PROJECT_DIR/".$slide["thumb"]."\"))))\n");
+    fprintf($fd, "      (image-create-from-file \"$PROJECT_DIR/".$slide[$slideselector]."\"))))\n");
 
     if ($slide["progress"])
         fprintf($fd, "(set! slide_$i (image-source-progress-bar -1 4 255 0 0 0 0 0 slide_$i))\n");
@@ -70,15 +90,34 @@ fprintf($fd, "(dump-video vid)\n");
 
 fclose($fd);
 
+/*
 $fd = fopen($PROJECT_DIR."/project.scheme", "r");
 while (($s = fgets($fd)) != NULL)
     print $s;
-fclose($fd);
-
+    fclose($fd);
+*/
 $tmp = tempnam("/tmp", "pdf2mp4");
 
-$cmdline = "./vidscheme vidscheme.scheme $PROJECT_DIR/project.scheme | avconv -y -r $fps -f image2pipe -vcodec ppm -i - -b 2M $tmp.mp4";
+$QUEUEDIR = "/tmp/queueworker/";
 
-print "<br><tt>";
-print $cmdline;
+$queuename = "j".time()."_".$pri."_".$key."_".$task.".q";
+$queuepath_tmp = "$QUEUEDIR/_$queuename";
+$queuepath = "$QUEUEDIR/$queuename";
+
+$fd = fopen($queuepath_tmp, "w");
+if (!$fd) {
+    print "<h2>Failed to create queue file</h2>";
+    die();
+}
+
+fwrite($fd, "#!/bin/bash\n\n");
+$VSPATH="/var/www/pdf2mp4/src/";
+fwrite($fd, "$VSPATH/vidscheme $VSPATH/vidscheme.scheme $PROJECT_DIR/project.scheme | avconv -y -r $fps -f image2pipe -vcodec ppm -i - -b $bitrate $outputpath");
+fclose($fd);
+
+chmod($queuepath_tmp, 0755);
+rename($queuepath_tmp, $queuepath);
+
+
+header("location: queuewatcher.php?key=$key");
 ?>
