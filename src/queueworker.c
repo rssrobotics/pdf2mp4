@@ -142,6 +142,8 @@ static int64_t utime_now()
 
 int main(int argc, char *argv[])
 {
+    setlinebuf(stdout);
+
     getopt_t *gopt = getopt_create();
 
     getopt_add_bool(gopt, 'h', "help", 0, "Show this help");

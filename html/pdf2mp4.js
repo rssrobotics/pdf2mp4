@@ -132,6 +132,8 @@ function doc_set_display_idx(idx)
     progress.checked = doc.slides[doc.display_idx].progress;
 
     document.getElementById("slide_nav_"+idx).className="thumb_selected";
+
+    document.getElementById("current_slide_label").innerHTML = " "+(doc.display_idx+1)+" / "+doc.slides.length+" ";
 }
 
 function doc_recompute_total_seconds()
@@ -142,6 +144,7 @@ function doc_recompute_total_seconds()
         seconds += slide.seconds;
     }
 
+    seconds = Math.floor(seconds*10) / 10;
     document.getElementById("total_seconds").innerHTML = ""+seconds;
 }
 
@@ -178,7 +181,6 @@ function doc_rebuild_gui()
         doc_save();
     };
 
-    document.getElementById("current_slide_label").innerHTML = " "+(doc.display_idx+1)+" / "+doc.slides.length+" ";
     document.getElementById("next_button").onclick = function() {
         doc_set_display_idx(doc.display_idx + 1);
     }
@@ -222,3 +224,10 @@ function doc_register_in_local_storage()
     projects[doc.key] = doc;
     localStorage["projects"] = JSON.stringify(projects);
 }
+
+/*
+window.onbeforeunload = function() {
+    if (doc_save_triggered) {
+        alert("Unsaved work");
+    }
+}*/

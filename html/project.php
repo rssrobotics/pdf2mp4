@@ -5,18 +5,7 @@ include("common.php");
 do_header("Project editor");
 do_banner();
 
-
-$key = $_REQUEST["key"];
-
-if (strlen($key) != 40 || !preg_match("/^[a-z0-9]*$/", $key)) {
-print "<h2>Sorry, invalid key.</h2>";
-do_footer();
-   die();
-}
-
-$PROJECT_DIR = $PROJECTS_PATH."/".$key;
-$PROJECT_JSON = $PROJECT_DIR."/"."json.txt";
-$PROJECT_URL = $PROJECTS_URL."/".$key;
+validate_key($key);
 
 ?>
 
@@ -50,10 +39,14 @@ $PROJECT_URL = $PROJECTS_URL."/".$key;
       Project name: <input type=text id=project_name><br><br>
       Status: <span id=status_label></span><br><br>
       Total seconds: <span id=total_seconds>0</span><br>
-      (RSS 2014 maximum 300)<br><br>
+(RSS 2014 maximum <?php print $MAX_MOVIE_SECONDS ?>)<br><br>
       Show overall progress bar: <input id=global_progress_bar type=checkbox><br><br>
-<a href="render.php?key=<?php print $key?>&preview=1">Render preview video</a><br><br>
-<a href="render.php?key=<?php print $key?>&preview=0">Render final video (slow!)</a><br><br>
+<a href="render.php?key=<?php print $key?>&preview=1">Render preview video</a><br>
+<font size=-1>320p @ 1fps</font><br><br>
+
+    <a href="render.php?key=<?php print $key?>&preview=0">Render final video</a><br>
+    <font size=-1>1080p @ 30fps -- slow!</font><br><br>
+<a href="queuewatcher.php?key=<?php print $key?>">See render queue/results</a><br><br>
     </div>
   </tr>
 </table>

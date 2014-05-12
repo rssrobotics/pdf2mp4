@@ -18,6 +18,27 @@ print "<html><head><title>$name</title>";
 <?php
 }
 
+$key = $_REQUEST["key"];
+
+$PROJECT_DIR = $PROJECTS_PATH."/".$key;
+$PROJECT_JSON = $PROJECT_DIR."/"."json.txt";
+$PROJECT_URL = $PROJECTS_URL."/".$key;
+
+$MAX_MOVIE_SECONDS = 300;
+
+function validate_key($key)
+{
+    global $PROJECT_JSON;
+
+    if (strlen($key) != 40 || !preg_match("/^[a-z0-9]*$/", $key) || !file_exists($PROJECT_JSON)) {
+        print "<h2>Sorry, invalid key.</h2>";
+        do_footer();
+        die();
+    }
+
+    return true;
+}
+
 function do_banner()
 {
 ?>

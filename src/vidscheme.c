@@ -458,6 +458,8 @@ static sobject_t *builtin_image_native(scheme_t *scheme, sobject_t *env, sobject
 
 int main(int argc, char *argv[])
 {
+    setlinebuf(stdout);
+
     scheme_t *scheme = scheme_create();
     sobject_t *env = scheme_env_create(scheme, NULL);
     scheme_env_setup_basic(scheme, env);

@@ -186,7 +186,7 @@
 (define (dump-video is)
   (for-loop 0 (is 'length) 1
 	    (lambda (idx)
-	      (output "\nframe " idx " / " (is 'length) "\n")
+	      (output "\nQQframe " idx " / " (is 'length) "QQ\n")
 	      ((is 'get-frame idx) 'output))))
 
 (define (crossfade-all length lst)
