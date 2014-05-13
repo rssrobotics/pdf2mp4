@@ -158,7 +158,8 @@
   ((make-progress-bar-1 width mark alpha r0 g0 b0 r1 g1 b1) 'scale width height)
 )
 
-(define (image-source-progress-bar y height r0 g0 b0 r1 g1 b1 is)
+; slow reference version
+(define (image-source-progress-bar-reference y height r0 g0 b0 r1 g1 b1 is)
   (lambda (message . args)
     (case message
       ((get-frame)
@@ -166,6 +167,19 @@
 		(mark (/ (* (im 'get-width) (first args)) (is 'length)))
 		(alpha (/ 5 (/ (im 'get-width) (is 'length))))
 		(pb (make-progress-bar (im 'get-width) height mark alpha r0 g0 b0 r1 g1 b1))
+		)
+	 (im 'draw-image 0 y pb)))
+      ((length) (is 'length))
+      (else (apply is (append (list message) args))))))
+
+(define (image-source-progress-bar y height rgb0 rgb1 is)
+  (lambda (message . args)
+    (case message
+      ((get-frame)
+       (letrec ((im (is 'get-frame (first args)))
+		(mark (/ (* (im 'get-width) (first args)) (is 'length)))
+		(alpha (/ 5 (/ (im 'get-width) (is 'length))))
+		(pb (wrap-native-objects (image-native 'create-progress-bar (im 'get-width) height mark alpha rgb0 rgb1)))
 		)
 	 (im 'draw-image 0 y pb)))
       ((length) (is 'length))

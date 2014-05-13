@@ -253,6 +253,44 @@ static sobject_t *builtin_image_native(scheme_t *scheme, sobject_t *env, sobject
         return scheme_image_create(scheme, im);
     }
 
+    // create-progress-bar
+    if (!strcmp(msg, "create-progress-bar")) {
+        SCHEME_TYPE_CHECK(scheme, scheme_second(scheme, head), "REAL");
+        SCHEME_TYPE_CHECK(scheme, scheme_third(scheme, head), "REAL");
+        SCHEME_TYPE_CHECK(scheme, scheme_fourth(scheme, head), "REAL");
+        SCHEME_TYPE_CHECK(scheme, scheme_fifth(scheme, head), "REAL");
+        SCHEME_TYPE_CHECK(scheme, scheme_sixth(scheme, head), "STRING");
+        SCHEME_TYPE_CHECK(scheme, scheme_seventh(scheme, head), "STRING");
+
+        int width = (int) scheme_second(scheme, head)->u.real.v;
+        int height = (int) scheme_third(scheme, head)->u.real.v;
+        double mark = scheme_fourth(scheme, head)->u.real.v;
+        double alpha = scheme_fifth(scheme, head)->u.real.v;
+
+        uint8_t rgb0[3];
+        parse_rgb(scheme, scheme_sixth(scheme, head), rgb0);
+
+        uint8_t rgb1[3];
+        parse_rgb(scheme, scheme_seventh(scheme, head), rgb1);
+
+        image_u8x3_t *im = image_u8x3_create(width, height);
+
+        for (int x = 0; x < width; x++) {
+            double frac1 = 1.0 / (1 + exp(-alpha * (x - mark)));
+            double frac0 = 1 - frac1;
+
+            for (int cidx = 0; cidx < 3; cidx++) {
+                im->buf[3*x+cidx] = (int) (frac0*rgb0[cidx] + frac1*rgb1[cidx]);
+            }
+        }
+
+        // replicate row0 down the image
+        for (int y = 1; y < height; y++)
+            memcpy(&im->buf[y*im->stride], im->buf, im->stride);
+
+        return scheme_image_create(scheme, im);
+    }
+
     // instance methods always take a second argument, an image.
     SCHEME_TYPE_CHECK(scheme, scheme_second(scheme, head), "IMAGE_U8X3");
     image_u8x3_t *im = (image_u8x3_t*) scheme_second(scheme, head)->u.other.impl;

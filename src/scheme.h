@@ -149,6 +149,10 @@ sobject_t *scheme_second(scheme_t *scheme, sobject_t *obj);
 sobject_t *scheme_third(scheme_t *scheme, sobject_t *obj);
 sobject_t *scheme_fourth(scheme_t *scheme, sobject_t *obj);
 sobject_t *scheme_fifth(scheme_t *scheme, sobject_t *obj);
+sobject_t *scheme_sixth(scheme_t *scheme, sobject_t *obj);
+sobject_t *scheme_seventh(scheme_t *scheme, sobject_t *obj);
+sobject_t *scheme_eighth(scheme_t *scheme, sobject_t *obj);
+
 int scheme_is_true(scheme_t *scheme, sobject_t *obj);
 
 void scheme_gc_register(scheme_t *scheme, sobject_t *obj, int bytes);

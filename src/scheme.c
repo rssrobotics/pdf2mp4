@@ -546,6 +546,21 @@ sobject_t *scheme_fifth(scheme_t *scheme, sobject_t *obj)
     return scheme_first(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, obj)))));
 }
 
+sobject_t *scheme_sixth(scheme_t *scheme, sobject_t *obj)
+{
+    return scheme_first(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, obj))))));
+}
+
+sobject_t *scheme_seventh(scheme_t *scheme, sobject_t *obj)
+{
+    return scheme_first(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, obj)))))));
+}
+
+sobject_t *scheme_eight(scheme_t *scheme, sobject_t *obj)
+{
+    return scheme_first(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, scheme_rest(scheme, obj))))))));
+}
+
 int scheme_is_true(scheme_t *scheme, sobject_t *obj)
 {
     return (obj != SOBJECT_FALSE);

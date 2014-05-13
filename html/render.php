@@ -62,7 +62,7 @@ for ($i = 0; $i < count($doc["slides"]); $i++) {
 //    fprintf($fd, "      (image-create-from-file \"$PROJECT_DIR/".$slide[$slideselector]."\"))))\n");
 
     if ($slide["progress"])
-        fprintf($fd, "(set! slide_$i (image-source-progress-bar -1 4 255 0 0 0 0 0 slide_$i))\n");
+        fprintf($fd, "(set! slide_$i (image-source-progress-bar -1 4 \"#ff0000\" \"#000000\" slide_$i))\n");
 
     fprintf($fd, "\n");
 
@@ -82,7 +82,7 @@ fprintf($fd, "\n");
 //fprintf($fd, "(set! vid (image-source-decimate-frames ".intval($fps/2)." tmp))\n");
 fprintf($fd, "\n");
 if ($doc["progress"])
-    fprintf($fd, "(set! vid (image-source-progress-bar 0 4 255 0 0 0 0 0 vid))\n");
+    fprintf($fd, "(set! vid (image-source-progress-bar 0 4 \"#ff0000\" \"#000000\" vid))\n");
 
 fprintf($fd, "\n");
 fprintf($fd, "(dump-video vid)\n");
