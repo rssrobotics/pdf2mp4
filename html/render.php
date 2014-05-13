@@ -113,7 +113,7 @@ if (!$fd) {
 
 fwrite($fd, "#!/bin/bash\n\n");
 $VSPATH="/var/www/pdf2mp4/src/";
-fwrite($fd, "$VSPATH/vidscheme $VSPATH/vidscheme.scheme $projectscheme | avconv -y -r $fps -f image2pipe -vcodec ppm -i - -b $bitrate $outputpath");
+fwrite($fd, "$VSPATH/vidscheme $VSPATH/vidscheme.scheme $projectscheme | avconv -y -r $fps -f image2pipe -vcodec ppm -i - -pre ultrafast -b $bitrate $outputpath");
 fclose($fd);
 
 chmod($queuepath_tmp, 0755);

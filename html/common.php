@@ -1,13 +1,15 @@
 <?php
 
 $PROJECTS_PATH="/var/www/pdf2mp4/html/projects";
-$PROJECTS_URL="http://localhost/projects";
+$PROJECTS_URL="http://162.209.107.61/projects";
+
+$MAX_MOVIE_SECONDS = 300;
 
 function do_header($name)
 {
 print "<html><head><title>$name</title>";
 ?>
-<link href=styles.css rel=stylesheet type="text/css">
+<link href="styles.css" rel="stylesheet" type="text/css">
 <link rel="icon" href="favicon.ico" />
 </head>
 
@@ -23,8 +25,6 @@ $key = $_REQUEST["key"];
 $PROJECT_DIR = $PROJECTS_PATH."/".$key;
 $PROJECT_JSON = $PROJECT_DIR."/"."json.txt";
 $PROJECT_URL = $PROJECTS_URL."/".$key;
-
-$MAX_MOVIE_SECONDS = 300;
 
 function validate_key($key)
 {

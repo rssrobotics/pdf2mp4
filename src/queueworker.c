@@ -159,6 +159,8 @@ int main(int argc, char *argv[])
 
     const char *dirpath = getopt_get_string(gopt, "path");
 
+    mkdir(dirpath, 0777);
+
     for (; ; sleep(1)) {
 
         int lockfd = -1;
