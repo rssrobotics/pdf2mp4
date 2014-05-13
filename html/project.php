@@ -25,10 +25,12 @@ validate_key($key);
       <img id=current_slide class=thumb><br>
       <center>
       <div id=controls_area>
-<span onclick='move_previous()'>(move earlier)</span>
+<span onclick='move_previous()'><img src=move_previous.png></span>
+	<span style="width:20px; display:inline-block"></span>
 	<img id=prev_button src=prev_button.png><span id=current_slide_label></span>
 	<img id=next_button src=next_button.png>
-<span onclick='move_next()'>(move later)</span>
+	<span style="width:20px; display:inline-block"></span>
+<span onclick='move_next()'><img src=move_next.png></span>
 <br><br>
 	Slide duration: <input type=text id=slide_seconds size=5> seconds (used <span id=total_seconds>0</span> of <span id=maxtime_span></span> allowed)<br><br>
 
