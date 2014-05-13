@@ -103,7 +103,7 @@ print "</center>";
 ?>
 <script>
 setTimeout(function() { document.location = "queuewatcher.php?key=<?php print $key ?>"; },
-           15000);
+           5000);
 </script>
 
 <?php
