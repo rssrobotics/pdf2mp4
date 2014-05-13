@@ -1,7 +1,8 @@
 <?php
 
 $PROJECTS_PATH="/var/www/pdf2mp4/html/projects";
-$PROJECTS_URL="http://162.209.107.61/projects";
+$PROJECTS_URL="http://".$_SERVER["SERVER_ADDR"]."/projects";
+$QUEUE_DIR = "/var/www/pdf2mp4/queue/";
 
 $MAX_MOVIE_SECONDS = 300;
 

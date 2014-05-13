@@ -7,10 +7,13 @@ do_banner();
 
 validate_key($key);
 
-$QUEUE_DIR = "/tmp/queueworker/";
-
 $files = array();
 $dir = opendir($QUEUE_DIR);
+if (!$dir) {
+    print "failed to open $QUEUE_DIR";
+    die();
+}
+
 while (($file = readdir($dir)) !== false) {
     if (preg_match('/^j([0-9]*)_([0-9]*)_([0-9a-fA-F]*)_([a-z]*).(.*)$/', $file, $matches)) {
         $files[] = $file;

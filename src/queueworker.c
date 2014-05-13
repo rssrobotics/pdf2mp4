@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
     getopt_t *gopt = getopt_create();
 
     getopt_add_bool(gopt, 'h', "help", 0, "Show this help");
-    getopt_add_string(gopt, 'p', "path", "/tmp/queueworker", "Directory for work items");
+    getopt_add_string(gopt, 'p', "path", "/var/www/pdf2mp4/queue/", "Directory for work items");
 
     // the setrlimit only affects actual CPU time, not wallclock time.
 //    getopt_add_int(gopt, '\0', "cpu-limit", "0", "CPU limit per process (seconds)");

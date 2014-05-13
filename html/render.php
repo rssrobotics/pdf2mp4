@@ -96,14 +96,12 @@ if ($totalseconds > $MAX_MOVIE_SECONDS) {
     die();
 }
 
-$QUEUEDIR = "/tmp/queueworker/";
-
 $queuename = "j".$t."_".$pri."_".$key."_".$task.".q";
-$queuepath_tmp = "$QUEUEDIR/_$queuename";
-$queuepath = "$QUEUEDIR/$queuename";
+$queuepath_tmp = "$QUEUE_DIR/_$queuename";
+$queuepath = "$QUEUE_DIR/$queuename";
 
 system("rm -rf $PROJECT_DIR/$taskbase*.mp4");
-system("rm -rf $QUEUEDIR/j*_$key_$taskbase*.q");
+system("rm -rf $QUEUE_DIR/j*_$key_$taskbase*.q");
 
 $fd = fopen($queuepath_tmp, "w");
 if (!$fd) {
