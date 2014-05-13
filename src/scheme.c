@@ -862,10 +862,19 @@ void scheme_env_add_method(scheme_t *scheme, sobject_t *env,
 //
 static sobject_t *builtin_output(scheme_t *scheme, sobject_t *env, sobject_t *head)
 {
+    if (head == NULL) {
+        fprintf(stderr, "()");
+        return SOBJECT_TRUE;
+    }
+
     for ( ; head != NULL; head = scheme_rest(scheme, head)) {
         sobject_t *obj = scheme_first(scheme, head);
 
-        obj->to_string(obj, stderr);
+        if (obj == NULL) {
+            fprintf(stderr, "()");
+        } else {
+            obj->to_string(obj, stderr);
+        }
     }
 
     return SOBJECT_TRUE;

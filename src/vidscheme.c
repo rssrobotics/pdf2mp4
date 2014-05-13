@@ -142,6 +142,12 @@ static sobject_t *builtin_image_source_native(scheme_t *scheme, sobject_t *env, 
         return scheme_image_source_create(scheme, is);
     }
 
+/*    if (!strcmp(msg, "create-from-path-cache")) {
+        SCHEME_TYPE_CHECK(scheme, scheme_second(scheme, head), "STRING");
+        image_source_t *is = image_source_create(scheme_second(scheme, head)->u.string.v);
+        return scheme_image_source_create(scheme, is);
+    }
+*/
     // instance methods always take a second argument, an image.
     SCHEME_TYPE_CHECK(scheme, scheme_second(scheme, head), "IMAGE_SOURCE");
     image_source_t *is = (image_source_t*) scheme_second(scheme, head)->u.other.impl;

@@ -1,0 +1,45 @@
+
+(define (append a b)
+  (if (pair? a)
+      (cons (first a) (append (rest a) b))
+      b))
+
+
+(define (queue-create resolver capacity)
+
+  (letrec ((head '()))
+
+    (define (cache-lookup head key)
+      (if (pair? head)
+	  (if (eq? (first (first head)) key)
+	      (second (first head))
+	      (cache-lookup (rest head) key)
+	      )
+	  #f))
+
+    (define (list-truncate lst len)
+      (if (<= len 1)
+	  (list (first lst))
+	  (append (list (first lst)) (list-truncate (rest lst) (- len 1)))))
+
+    (define (list-length lst)
+      (if (pair? lst)
+	  (+ 1 (list-length (rest lst)))
+	  0))
+
+    (lambda (key)
+      (letrec ((_value (cache-lookup head key)))
+	(if _value
+	    _value
+	    (let ((value (resolver key)))
+	      (set! head (append (list (list key value)) head))
+	      (output "head: " head "\n")
+	      (output "length " (list-length head) "\n")
+	      (if (> (list-length head) capacity)
+		  (set! head (list-truncate head capacity)))
+	      (output "head: " head "\n")
+
+	      value))))
+    ))
+
+;(define queue (queue-create (lambda (key) (output "EVALUATING " key "\n") (+ key key)) 5))
