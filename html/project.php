@@ -25,10 +25,15 @@ validate_key($key);
       <img id=current_slide class=thumb><br>
       <center>
       <div id=controls_area>
+<span onclick='move_previous()'>&lt;&lt;</span>
 	<img id=prev_button src=prev_button.png><span id=current_slide_label></span>
-	<img id=next_button src=next_button.png><br><br>
-	Seconds: <input type=text id=slide_seconds size=5><br><br>
-	Show progress bar: <input id=slide_progress_bar type=checkbox>
+	<img id=next_button src=next_button.png>
+<span onclick='move_next()'>&gt;&gt;</span>
+<br><br>
+	Slide seconds: <input type=text id=slide_seconds size=5>
+      Total <span id=total_seconds>0</span> of <span id=maxtime_span></span> allowed<br><br>
+
+	Render slide progress bar: <input id=slide_progress_bar type=checkbox>
 	</center>
       </div>
     </div>
@@ -36,17 +41,22 @@ validate_key($key);
 
     <td valign=top>
     <div id=status_div>
-      Project name: <input type=text id=project_name><br><br>
-      Status: <span id=status_label></span><br><br>
-      Total seconds: <span id=total_seconds>0</span><br>
-(RSS 2014 maximum <?php print $MAX_MOVIE_SECONDS ?>)<br><br>
-      Show overall progress bar: <input id=global_progress_bar type=checkbox><br><br>
-<a href="render.php?key=<?php print $key?>&preview=1">Render preview video</a><br>
-<font size=-1>320p @ 1fps</font><br><br>
+Name: <br><input type=text id=project_name style="width: 100%"><br><br>
+      <span id=status_label></span><br>
+      Render overall progress bar: <input id=global_progress_bar type=checkbox><br><br>
 
-    <a href="render.php?key=<?php print $key?>&preview=0">Render final video</a><br>
-    <font size=-1>1080p @ 30fps -- slow!</font><br><br>
+<center>
+<a href="render.php?key=<?php print $key?>&preview=1"><img src=render_preview.png></a><br>
+<font size=-1><span id=preview_description></span></font></center><br>
+
+<center>
+    <a href="render.php?key=<?php print $key?>&preview=0"><img src=render_final.png></a><br>
+    <font size=-1><span id=final_description></span> (slow!)</font></center><br>
+
+    <center>
 <a href="queuewatcher.php?key=<?php print $key?>">See render queue/results</a><br><br>
+</center>
+
     </div>
   </tr>
 </table>
@@ -54,20 +64,21 @@ validate_key($key);
 </center>
 
 <script>
+
 var project_url = "<?php echo $PROJECT_URL ?>";
 var key = "<?php echo $key ?>";
 
-<?php
-$fd = fopen($PROJECT_JSON, "r");
-if (!$fd) {
-  // new document
-  print "doc_create(8);\n";
-} else {
- $s = fgets($fd);
- print "doc_restore('$s');\n";
-}
+xmlhttp_post("project_read.php", "key="+key,
+             function(xml, url) {
+                 try {
+                     doc_restore(xml.responseText);
+                     update_descriptions();
+                 } catch (ex) {
+                     alert(xml.responseText);
+                 }
+             });
 
-?>
+
 </script>
 
 

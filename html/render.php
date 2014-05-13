@@ -19,17 +19,17 @@ $doc = json_decode($json, 1);
 $t = time();
 
 if ($_REQUEST["preview"]==1) {
-    $fps = 1;
-    $h = 320;
+    $fps = intval($doc["pfps"]);
+    $h = intval($doc["pheight"]);
+    $bitrate = intval($doc["pbitrate"]);
     $slideselector = "thumb";
-    $bitrate = "2M";
     $taskbase = "preview";
     $pri = 0;
 } else {
-    $fps = 30;
-    $h = 1080;
+    $fps = intval($doc["fps"]);
+    $h = intval($doc["height"]);
+    $bitrate = intval($doc["bitrate"]);
     $slideselector = "slide";
-    $bitrate = "8M";
     $taskbase = "final";
     $pri = 1;
 }
@@ -42,7 +42,9 @@ $projectscheme = $PROJECT_DIR."/project_$task.scheme";
 chmod($PROJECT_DIR, 0777);
 unlink($outputpath);
 
-$w = intval(1920*$h/1080);
+$w = intval(floatval($doc["aspect"]) * $h);
+if (($w % 4) != 0)
+    $w += 4 - ($w % 4);
 
 /////////////////////////////////////////
 // write the output
@@ -62,7 +64,7 @@ for ($i = 0; $i < count($doc["slides"]); $i++) {
 //    fprintf($fd, "      (image-create-from-file \"$PROJECT_DIR/".$slide[$slideselector]."\"))))\n");
 
     if ($slide["progress"])
-        fprintf($fd, "(set! slide_$i (image-source-progress-bar -1 4 \"#ff0000\" \"#000000\" slide_$i))\n");
+        fprintf($fd, "(set! slide_$i (image-source-progress-bar -1 4 \"".$doc["progress_rgb"]."\" \"#000000\" slide_$i))\n");
 
     fprintf($fd, "\n");
 
@@ -77,22 +79,21 @@ for ($i = 0; $i < count($doc["slides"]); $i++) {
     fprintf($fd, "                               slide_$i\n");
 }
 
-fprintf($fd, "                               (image-source-create-from-image ".intval(2*$fps)." (image-create $w $h \"#000000\")))))\n");
+fprintf($fd, "       (image-source-create-from-image ".intval(2*$fps)." (image-create $w $h \"#000000\")))))\n");
 fprintf($fd, "\n");
-//fprintf($fd, "(set! vid (image-source-decimate-frames ".intval($fps/2)." tmp))\n");
 fprintf($fd, "\n");
 if ($doc["progress"])
-    fprintf($fd, "(set! vid (image-source-progress-bar 0 4 \"#ff0000\" \"#000000\" vid))\n");
+    fprintf($fd, "(set! vid (image-source-progress-bar 0 4 \"".$doc["progress_rgb"]."\" \"#000000\" vid))\n");
 
 fprintf($fd, "\n");
 fprintf($fd, "(dump-video vid)\n");
 
 fclose($fd);
 
-if ($totalseconds > $MAX_MOVIE_SECONDS) {
+if ($totalseconds > $doc["maxtime"]) {
     do_header("Render");
     do_banner();
-    print "Your movie is longer than the maximum allowed ($MAX_MOVIE_SECONDS seconds).";
+    print "Your movie is longer than the maximum allowed ($doc[maxtime] seconds).";
     die();
 }
 

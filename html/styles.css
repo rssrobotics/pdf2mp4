@@ -1,6 +1,6 @@
 .topmenu
 {
-    background-color: #eeeeee;
+/*    background-color: #eeeeee; */
     padding: 30px;
     border: 0px;
     margin: 10px 10px;
@@ -60,6 +60,7 @@ P { margin : 0px 0px 1em 0px;
 /* thumb area includes the slide and the controls below it */
 #thumb_area {
 /*              width: 560px; */
+              height: 60px;
                 margin-left: auto;
                 margin-right:auto;
                 vertical-align: middle;
@@ -70,7 +71,7 @@ P { margin : 0px 0px 1em 0px;
              height: 500px;
              width: 200px;
              overflow: auto;
-             background-color: #444444;
+             background-color: #666666;
              float: left;
              margin: 5px;
              border-style: solid;
@@ -78,8 +79,19 @@ P { margin : 0px 0px 1em 0px;
              }
 
 #status_div {
-//              background-color: #dddddd;
               }
 
 #status_label {
+                display:block;
+                height: 40px;
                 }
+
+
+#current_slide_label {
+/*                       display:inline-block;
+                       vertical-align: text-top;
+                       height: 60px;
+                       background-color: #ff0000;
+                       margin-bottom: 30px;
+*/
+                       }

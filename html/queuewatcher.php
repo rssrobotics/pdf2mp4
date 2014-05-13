@@ -55,7 +55,7 @@ for ($i = 0; $i < count($files); $i++) {
         else
             print "<td>Another project ($jtask)<br>";
 
-        print "<td>";
+        print "<td align=center>";
         $elapsed = time() - intval($jtime);
 
         $ppath = $QUEUE_DIR."/j".$jtime."_".$jpri."_".$jkey."_".$jtask.".p";
@@ -90,22 +90,20 @@ for ($i = 0; $i < count($files); $i++) {
         } else if (str_starts_with($jstatus, "c")) {
             if ($key == $jkey) {
 
-                print "Completed ";
-
-                print "<a href=$movieurl>$jtask.mp4</a><br>";
+                print "<a href=$movieurl><img src=download.png></a><br>";
                 $dt = filemtime($moviepath) - $jtime;
                 print "<font size=-1>(queue+process time: $dt seconds)</font>";
             }
         }
     }
 }
-print "</table>";
-print "<I>Last refreshed ".date("r")."</I>";
+print "</table>\n";
+print "<br><I>Last refreshed ".date("r")."</I>";
 print "</center>";
 ?>
 <script>
 setTimeout(function() { document.location = "queuewatcher.php?key=<?php print $key ?>"; },
-           5000);
+           15000);
 </script>
 
 <?php

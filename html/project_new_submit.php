@@ -4,6 +4,7 @@ ob_implicit_flush(1);
 
 // generate a new key
 $_REQUEST["key"] = sha1(rand().rand().rand().rand().rand().rand());
+
 include("common.php");
 
 function myflush()
@@ -26,15 +27,13 @@ if (!move_uploaded_file($_FILES['pdffile']['tmp_name'], $PROJECT_PDF)) {
 }
 
 ?>
-<!--
-<h2>Your key</h2>
 
-<P>Your project has been assigned a unique 'key' which will give anyone who knows it access to your project. <B>If you lose this key, you will lose access to your project.</B></P>
+<script>
+ // create the initial document.
+var doc = new Object();
+doc.key = "<?php print $key ?>";
 
-<P><b>Your key: </b><?php print $key ?>
-
-<P>You can also bookmark the next page, whose URL contains your key. </P>
--->
+</script>
 
 <?php
 
@@ -48,15 +47,30 @@ print "<h2>Project creation status</h2>";
 print "File uploaded succeeded....<br>\n";
 myflush();
 
+$profile = $_REQUEST["profile"];
+$profile_terms = split(";", $profile);
+
+$profile_hash = array();
+
+for ($i = 0; $i < count($profile_terms); $i++) {
+    $term = $profile_terms[$i];
+    $kv = split("=", $term);
+    if (count($kv)==2) {
+        print "<script>doc[\"".$kv[0]."\"] = ".floatval($kv[1]).";</script>\n";
+        $profile_hash[$kv[0]] = intval($kv[1]);
+    }
+}
+
 print "Splitting PDF into slides... (this can take minutes)<br>\n";
 myflush();
 
-system("cd $PROJECT_DIR && pdftoppm -png -scale-to-x -1 -scale-to-y 1080 $PROJECT_PDF pdfslide");
+system("cd $PROJECT_DIR && pdftoppm -png -scale-to-x -1 -scale-to-y ".$profile_hash["pheight"]." $PROJECT_PDF pdfthumb");
 
-print "Almost there...<br>\n";
+print "&nbsp; Almost there...<br>\n";
 myflush();
 
-system("cd $PROJECT_DIR && pdftoppm -png -scale-to-x -1 -scale-to-y 320 $PROJECT_PDF pdfthumb");
+
+system("cd $PROJECT_DIR && pdftoppm -png -scale-to-x -1 -scale-to-y ".$profile_hash["height"]." $PROJECT_PDF pdfslide");
 
 $files = array();
 $dir = opendir($PROJECT_DIR);
@@ -84,13 +98,10 @@ var slide_names = [];
   }
 ?>
 
-// create the initial document.
-var doc = new Object();
-doc.key = "<?php print $key ?>";
+var max_seconds = <?php print $profile_hash["maxtime"] ?>;
+
 doc.slides = [];
 var nslides = slide_names.length;
-
-var max_seconds = <?php print $MAX_MOVIE_SECONDS ?>;
 
 for (i = 0; i < nslides; i++) {
     var slide = new Object();
@@ -105,6 +116,7 @@ for (i = 0; i < nslides; i++) {
 }
 
 doc.progress = 1;
+doc.progress_rgb = "#888888";
 doc.display_idx = 0;
 doc.name = "<?php print $_FILES['pdffile']['name'] ?>";
 doc.create_date = new Date();

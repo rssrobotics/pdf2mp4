@@ -32,6 +32,7 @@ function xmlhttp_post(url, data, callback)
     xmlhttp.send(data);
 }
 
+/*
 function doc_create(nslides)
 {
     doc = new Object();
@@ -51,6 +52,7 @@ function doc_create(nslides)
     doc_rebuild_gui();
     doc_save();
 }
+*/
 
 // deserialize a saved document
 function doc_restore(json_string)
@@ -102,7 +104,7 @@ function doc_save_real()
                                   status_label.innerHTML="Last save failed.";
                           } else {
                               if (status_label)
-                                  status_label.innerHTML="Saved<br>"+(new Date()).toTimeString();
+                                  status_label.innerHTML="Saved<br><font size=-1>"+(new Date()).toTimeString()+"</font>";
                           }
                       } catch (ex) {
                               if (status_label)
@@ -131,7 +133,11 @@ function doc_set_display_idx(idx)
     var progress = document.getElementById("slide_progress_bar");
     progress.checked = doc.slides[doc.display_idx].progress;
 
-    document.getElementById("slide_nav_"+idx).className="thumb_selected";
+    var slidenav = document.getElementById("slide_nav");
+    var navimg = document.getElementById("slide_nav_"+idx);
+    navimg.className = "thumb_selected";
+
+//    slidenav.scrollTop = navimg.offsetTop; //navimg.y; //300; //= navimg.offsetHeight;
 
     document.getElementById("current_slide_label").innerHTML = " "+(doc.display_idx+1)+" / "+doc.slides.length+" ";
 }
@@ -145,7 +151,10 @@ function doc_recompute_total_seconds()
     }
 
     seconds = Math.floor(seconds*10) / 10;
-    document.getElementById("total_seconds").innerHTML = ""+seconds;
+    if (seconds > doc.maxtime)
+        document.getElementById("total_seconds").innerHTML = "<font color=#ff0000>"+seconds+"</font>";
+    else
+        document.getElementById("total_seconds").innerHTML = ""+seconds;
 }
 
 // called when the number of slides has changes, or other
@@ -231,3 +240,36 @@ window.onbeforeunload = function() {
         alert("Unsaved work");
     }
 }*/
+
+function update_descriptions()
+{
+    document.getElementById("preview_description").innerHTML = ""+doc.pheight+"p @ "+doc.pfps+" fps";
+    document.getElementById("final_description").innerHTML = ""+doc.height+"p @ "+doc.fps+" fps";
+    document.getElementById("maxtime_span").innerHTML = ""+doc.maxtime;
+}
+
+function move_previous()
+{
+    if (doc.display_idx == 0)
+        return;
+
+    var tmp = doc.slides[doc.display_idx-1];
+    doc.slides[doc.display_idx-1] = doc.slides[doc.display_idx];
+    doc.slides[doc.display_idx] = tmp;
+    doc.display_idx--;
+    doc_rebuild_gui();
+    doc_save();
+}
+
+function move_next()
+{
+    if (doc.display_idx == doc.slides.length-1)
+        return;
+
+    var tmp = doc.slides[doc.display_idx+1];
+    doc.slides[doc.display_idx+1] = doc.slides[doc.display_idx];
+    doc.slides[doc.display_idx] = tmp;
+    doc.display_idx++;
+    doc_rebuild_gui();
+    doc_save();
+}

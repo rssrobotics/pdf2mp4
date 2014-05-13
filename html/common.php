@@ -2,9 +2,20 @@
 
 $PROJECTS_PATH="/var/www/pdf2mp4/html/projects";
 $PROJECTS_URL="http://".$_SERVER["SERVER_ADDR"]."/projects";
+
+$PROJECT_URL = $PROJECTS_URL."/".$key;
+$PROJECT_DIR = $PROJECTS_PATH."/".$key;
+$PROJECT_JSON = $PROJECT_DIR."/"."project.json";
+
 $QUEUE_DIR = "/var/www/pdf2mp4/queue/";
 
-$MAX_MOVIE_SECONDS = 300;
+//$PREVIEW_HEIGHT = 320;
+//$PREVIEW_FPS = 1;
+
+//$FINAL_HEIGHT = 1200;
+//$FINAL_FPS = 30;
+
+//$MAX_MOVIE_SECONDS = 300;
 
 function do_header($name)
 {
@@ -45,7 +56,7 @@ function do_banner()
 ?>
 <center>
 <a href="/"><img border=0 src=pdf2mp4.png></a>
-<P>Create a video from a pages in a PDF</P>
+<P>Create a video from pages in a PDF</P>
 </center>
 
 <?php

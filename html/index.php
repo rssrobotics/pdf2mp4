@@ -11,12 +11,19 @@ do_banner();
 <tr><td width=50% valign=top class=topmenu><h2>Create a new project</h2></P>
 
 <form enctype="multipart/form-data" method="post" action=project_new_submit.php>
-<input type=file size=50 name=pdffile><br><br>
-<input type=submit>
-<input type=hidden name="key" value="<?php echo $key ?>">
+
+Preset:
+<select name="profile">
+<option value="height=1080;aspect=1.777;pheight=320;fps=30;pfps=1;bitrate=8000000;pbitrate=2000000;maxtime=300">RSS 2014 (1080p), 300 seconds</option>
+</select><br><br>
+    PDF: <input type=file size=50 name=pdffile accept='.pdf'><br>
+    <font size=-1>(Maximum size 100MB)</font><br><br>
+    <input type=image src=upload.png name=submit>
+
+
 </form>
 <br>
-(Maximum size 100MB)
+
 
 <td valign=top class=topmenu>
 <h2>Go to an existing project:</h2>
