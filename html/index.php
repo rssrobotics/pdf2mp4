@@ -1,20 +1,24 @@
 <?php
 
 include("common.php");
+do_header("pdf2mp4");
 do_banner();
 
 ?>
 
+<center>
 <table>
-<tr><td width=50% valign=top><h2>Create a new project</h2></P>
+<tr><td width=50% valign=top class=topmenu><h2>Create a new project</h2></P>
 
 <form enctype="multipart/form-data" method="post" action=project_new_submit.php>
 <input type=file size=50 name=pdffile><br><br>
 <input type=submit>
 <input type=hidden name="key" value="<?php echo $key ?>">
 </form>
+<br>
+(Maximum size 100MB)
 
-<td valign=top>
+<td valign=top class=topmenu>
 <h2>Go to an existing project:</h2>
 <div id=existing_projects_div></div>
 
@@ -49,6 +53,7 @@ function on_manual_key()
 
 <P>Manual key entry:<br><input id=key onkeyup='on_keypress(event)'  type=text name=key size=40><input onclick='on_manual_key()' type=submit value="Go!">
 </table>
+</center>
 
 <?php
 do_footer();

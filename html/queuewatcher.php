@@ -72,7 +72,8 @@ for ($i = 0; $i < count($files); $i++) {
             $stat = "";
             while (($s = fgets($ofd)) != NULL) {
                 if (preg_match('/QQframe ([0-9]+) \\/ ([0-9]+)QQ/', $s, $matches)) {
-                    $stat = "<font size=-1>frame $matches[1] / $matches[2]</font><br>";
+		    $eta = (intval($matches[2]) - intval($matches[1])) * $processtime / intval($matches[1]);
+                    $stat = "<font size=-1>frame $matches[1] / $matches[2]<br>Time remaining: ".intval($eta)." seconds</font><br>";
                     break;
                 }
             }
