@@ -2,9 +2,9 @@
 
 include("common.php");
 
-validate_key($key);
+validate_new_key($key);
 
-$fd = fopen($PROJECT_DIR."/json.txt", "w");
+$fd = fopen($PROJECT_JSON, "w");
 if (!$fd) {
     print "\"Failed to write data\"";
     die();

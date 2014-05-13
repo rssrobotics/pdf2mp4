@@ -121,7 +121,7 @@ doc.display_idx = 0;
 doc.name = "<?php print $_FILES['pdffile']['name'] ?>";
 doc.create_date = new Date();
 doc.create_ip = "<?php print $_SERVER["REMOTE_ADDR"] ?>";
-doc_save();
+doc_save_real();
 
 doc_register_in_local_storage();
 

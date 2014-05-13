@@ -38,6 +38,19 @@ $PROJECT_DIR = $PROJECTS_PATH."/".$key;
 $PROJECT_JSON = $PROJECT_DIR."/"."json.txt";
 $PROJECT_URL = $PROJECTS_URL."/".$key;
 
+function validate_new_key($key)
+{
+    global $PROJECT_JSON;
+
+    if (strlen($key) != 40 || !preg_match("/^[a-z0-9]*$/", $key)) {
+        print "<h2>Sorry, invalid key.</h2>";
+        do_footer();
+        die();
+    }
+
+    return true;
+}
+
 function validate_key($key)
 {
     global $PROJECT_JSON;
