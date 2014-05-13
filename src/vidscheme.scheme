@@ -89,12 +89,8 @@
 	    _value
 	    (let ((value (resolver key)))
 	      (set! head (append (list (list key value)) head))
-	      (output "head: " head "\n")
-	      (output "length " (list-length head) "\n")
 	      (if (> (list-length head) capacity)
 		  (set! head (list-truncate head capacity)))
-	      (output "head: " head "\n")
-
 	      value))))
     ))
 
