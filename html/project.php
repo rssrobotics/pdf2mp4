@@ -30,8 +30,7 @@ validate_key($key);
 	<img id=next_button src=next_button.png>
 <span onclick='move_next()'>(move later)</span>
 <br><br>
-	Slide seconds: <input type=text id=slide_seconds size=5>
-      Total <span id=total_seconds>0</span> of <span id=maxtime_span></span> allowed<br><br>
+	Slide duration: <input type=text id=slide_seconds size=5> seconds (used <span id=total_seconds>0</span> of <span id=maxtime_span></span> allowed)<br><br>
 
 	Render slide progress bar: <input id=slide_progress_bar type=checkbox>
 	</center>
