@@ -95,3 +95,15 @@ P { margin : 0px 0px 1em 0px;
                        margin-bottom: 30px;
 */
                        }
+
+.slide_nav_time {
+
+    opacity: 0.6;
+    color: #ffffff;
+    background-color: #000000;
+    position: relative;
+    padding: 5px;
+    top: -5px;
+    margin-bottom: 10px;
+    display: inline-block;
+}
