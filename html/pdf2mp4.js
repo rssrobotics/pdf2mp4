@@ -118,7 +118,7 @@ function doc_save_real()
 }
 
 // display a different slide in the thumbnail area, i.e., call this after setting doc.display_idx
-function doc_set_display_idx(idx)
+function doc_set_display_idx(idx, scroll)
 {
     document.getElementById("slide_nav_"+doc.display_idx).className="thumb";
 
@@ -137,6 +137,8 @@ function doc_set_display_idx(idx)
     var navimg = document.getElementById("slide_nav_"+idx);
     navimg.className = "thumb_selected";
 
+    if (scroll)
+	slidenav.scrollTop = navimg.offsetTop - navimg.offsetHeight;
 //    slidenav.scrollTop = navimg.offsetTop; //navimg.y; //300; //= navimg.offsetHeight;
 
     document.getElementById("current_slide_label").innerHTML = " "+(doc.display_idx+1)+" / "+doc.slides.length+" ";
@@ -169,8 +171,13 @@ function doc_rebuild_gui()
         for (var i = 0; i < doc.slides.length; i++) {
             var slide = doc.slides[i];
 
-            slide_nav.innerHTML += "<img id=slide_nav_"+i+" width="+(slide_nav.offsetWidth-40)+" class=thumb onclick='doc_set_display_idx("+i+")' src="+project_url+"/"+ slide.thumb + "><br>";
+            slide_nav.innerHTML += "<img id=slide_nav_"+i+" width="+(slide_nav.offsetWidth-40)+" class=thumb onclick='doc_set_display_idx("+i+", false)' src="+project_url+"/"+ slide.thumb + "><br>";
         }
+
+	window.onresize = function () {
+	    slide_nav.style.height = window.innerHeight * 0.8;
+	}
+	window.onresize();
     }
 
     // don't require them to hit enter to get live updates
@@ -191,11 +198,11 @@ function doc_rebuild_gui()
     };
 
     document.getElementById("next_button").onclick = function() {
-        doc_set_display_idx(doc.display_idx + 1);
+        doc_set_display_idx(doc.display_idx + 1, true);
     }
 
     document.getElementById("prev_button").onclick = function() {
-        doc_set_display_idx(doc.display_idx - 1);
+        doc_set_display_idx(doc.display_idx - 1, true);
     }
 
     document.getElementById("project_name").value = doc.name;
@@ -216,7 +223,7 @@ function doc_rebuild_gui()
         doc_save();
     }
 
-    doc_set_display_idx(doc.display_idx);
+    doc_set_display_idx(doc.display_idx, true);
     doc_recompute_total_seconds();
 
     doc_register_in_local_storage();
