@@ -120,6 +120,49 @@ function doc_set_display_idx(idx, scroll)
 
 
     document.getElementById("current_slide_label").innerHTML = " "+(doc.display_idx+1)+" / "+doc.slides.length+" ";
+
+    function on_fps_change() {
+
+    }
+
+    var slide = doc.slides[doc.display_idx];
+    if (slide["type"]=="slide") {
+    }
+
+    if (slide["type"] == "movie") {
+        document.getElementById("movie_parameters").style.display = "inline";
+
+        document.getElementById("fps_input").value = doc.slides[doc.display_idx].playfps;
+
+        function onkeyup() {
+            var fps = parseFloat(document.getElementById("fps_input").value);
+            if (!isFinite(fps))
+                return;
+
+            doc.slides[doc.display_idx].playfps = fps;
+            var nframes = doc.slides[doc.display_idx]['nframes'];
+
+            var playtime = Math.floor(10*doc.slides[doc.display_idx]['nframes'] / fps) / 10;
+
+            document.getElementById("fps_playtime").innerHTML = "<font size=-1>"+nframes+" frames @ "+fps+" fps = "+playtime+" s</font>";
+            doc_save();
+        };
+
+        document.getElementById("fps_input").onkeyup = onkeyup;
+
+        onkeyup();
+
+        document.getElementById("movie_mode").value = doc.slides[doc.display_idx].mode;
+        function onmodechange() {
+            doc.slides[doc.display_idx].mode = document.getElementById("movie_mode").value;
+            doc_save();
+        }
+        document.getElementById("movie_mode").onchange = onmodechange;
+        onmodechange();
+
+    } else {
+        document.getElementById("movie_parameters").style.display = "none";
+    }
 }
 
 function doc_recompute_total_seconds()

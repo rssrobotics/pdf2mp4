@@ -16,16 +16,38 @@ print "<h2>Movie import status</h2>";
 
 print "File uploaded succeeded....<br><br>\n";
 
-print "Extracting frames...<br><br>\n";
+print "Detecting frame rate...";
+
+if (1) {
+    $fd = popen("avprobe ".$_FILES['moviefile']['tmp_name']." 2>&1", "r");
+
+    if (!$fd) {
+        print "failed to open downloaded file";
+        die();
+    }
+
+    $fps = -1;
+
+    while (!feof($fd)) {
+        $s = fgets($fd);
+        if (preg_match('/, ([0-9]+[.]?[9-9]*) fps,/', $s, $matches)) {
+            $fps = $matches[1];
+        }
+    }
+    fclose($fd);
+    if ($fps > 0) {
+        print "... detected $fps fps";
+    } else {
+        print "... hmmm, I couldn't process this video. Is it an MP4?";
+        die();
+    }
+}
+
+print "<h3>Extracting frames... (this can take minutes)</h3><br><br>\n";
 
 myflush();
 
 system("avconv -i ".$_FILES['moviefile']['tmp_name']." -f image2 $MOVIE_DIR/frame%08d.png");
-
-//if (!move_uploaded_file($_FILES['moviefile']['tmp_name'], $PROJECT_PDF)) {
-//   print "File upload failed.\n";
-//   die();
-//}
 
 $frames = array();
 $dir = opendir($MOVIE_DIR);
@@ -42,7 +64,7 @@ if (count($frames) == 0) {
 }
 
 closedir($dir);
-print "<h2>Got ".count($frames)." frames.</h2>";
+print "Extracted ".count($frames)." frames.";
 
 ?>
 
@@ -57,8 +79,9 @@ xmlhttp_post("project_read.php", "key=<?php print $key ?>",
                      newslide['dir'] = "<?php print $MOVIE_NAME ?>";
                      newslide['thumb'] = "<?php print $MOVIE_NAME."/".$frames[count($frames)/2] ?>";
                      newslide['progress'] = 1;
-                     newslide['playfps'] = <?php print $_REQUEST["playfps"] ?>;
-                     newslide['seconds'] = <?php print floatval($_REQUEST["seconds"]) ?>;
+                     newslide['playfps'] = <?php print $fps ?>;
+                     newslide['nframes'] = <?php print count($frames) ?>;
+                     newslide['seconds'] = newslide['nframes'] / newslide['playfps'];
                      newslide['mode'] = "<?php print $_REQUEST["mode"] ?>";
                      doc.slides.splice(<?php print $_REQUEST["idx"] ?>, 0, newslide);
 

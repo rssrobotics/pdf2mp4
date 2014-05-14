@@ -36,9 +36,15 @@ validate_key($key);
 		Slide duration: <input type=text id=slide_seconds size=5> seconds (used
 		<span id=total_seconds>0</span> of
 		<span id=maxtime_span></span> allowed)<br>
+		Render slide progress bar: <input id=slide_progress_bar type=checkbox><br>
 
-		<br>
-		Render slide progress bar: <input id=slide_progress_bar type=checkbox>
+		<span id=movie_parameters>
+		  FPS: <input id=fps_input type=text size=4> <span id=fps_playtime></span><br>
+		  Play mode: <select id=movie_mode>
+		    <option value=hold>Hold last frame</option>
+		    <option value=loop>Loop video</option>
+		  </select>
+
 	      </div>
 	      <hr>
 	      <div id=advanced_controls_area>
@@ -51,12 +57,12 @@ validate_key($key);
 		  <img class=tool onclick='move_next()' src=move_next.png>
 		</a>
 
-		<a href="#" title="Delete the current slide" class=tooltip>
-		  <img class=tool onclick='delete_slide()' src=delete.png>
-		</a>
-
 		<a href="#" title="Insert a movie after this slide" class=tooltip>
 		  <img class=tool onclick='add_movie()' src=add_movie.png></span>
+		</a>
+
+		<a href="#" title="Delete the current slide" class=tooltip>
+		  <img class=tool onclick='delete_slide()' src=delete.png>
 		</a>
 
 	      </div>
@@ -103,7 +109,7 @@ xmlhttp_post("project_read.php", "key="+key,
                      doc_restore(xml.responseText);
                      update_descriptions();
                  } catch (ex) {
-                     alert(xml.responseText);
+                     alert("Uh oh: "+ex);
                  }
              });
 

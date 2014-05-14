@@ -77,11 +77,13 @@ function do_banner()
 
 function do_footer()
 {
+/*
 	print "<br clear=all><br><hr>";
 	print "<center>";
 	print "<font face=-1>Developed by <a href=mailto:ebolson@umich.edu>Edwin Olson</a> for the Robotics Science and Systems 2014 conference.</font>";
 	print "</center>";
-	print "</html";
+	print "</html>";
+*/
 }
 
 function str_ends_with($haystack, $needle)

@@ -72,7 +72,7 @@ for ($i = 0; $i < count($doc["slides"]); $i++) {
         fprintf($fd, "(define slide_$i \n");
         fprintf($fd, "  (image-source-matte $w $h \"#000000\"\n");
         fprintf($fd, "    (image-source-scale -1 $h\n");
-        fprintf($fd, "      (image-source-create-from-path ".$slide["seconds"]." ".$slide["playfps"]." ".$slide["mode"]." \"".$PROJECT_DIR."/".$slide["dir"]."/\"))))\n");
+        fprintf($fd, "      (image-source-create-from-path ".$slide["seconds"]." ".$slide["playfps"]." '".$slide["mode"]." \"".$PROJECT_DIR."/".$slide["dir"]."/\"))))\n");
 
         if ($slide["progress"])
             fprintf($fd, "(set! slide_$i (image-source-progress-bar -1 4 \"".$doc["progress_rgb"]."\" \"#000000\" slide_$i))\n");
