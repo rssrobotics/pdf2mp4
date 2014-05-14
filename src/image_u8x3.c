@@ -153,6 +153,7 @@ image_u8x3_t *image_u8x3_create_from_png(const char *path)
             }
         }
 
+        free(row_pointers);
         free(buf);
         goto finish;
     }
@@ -173,6 +174,7 @@ image_u8x3_t *image_u8x3_create_from_png(const char *path)
             }
         }
 
+        free(row_pointers);
         free(buf);
         goto finish;
     }
@@ -184,7 +186,38 @@ image_u8x3_t *image_u8x3_create_from_png(const char *path)
             row_pointers[y] = &im->buf[y*im->stride];
 
         png_read_image(png_ptr, row_pointers);
+        free(row_pointers);
+        goto finish;
+    }
 
+    if (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_GRAY_ALPHA) {
+        assert(0);
+    }
+
+    if (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_PALETTE) {
+        uint8_t *buf = malloc(width * height);
+        png_bytep *row_pointers = malloc(sizeof(png_bytep) * height);
+        for (int y = 0; y < height; y++)
+            row_pointers[y] = &buf[y*width];
+
+        png_read_image(png_ptr, row_pointers);
+
+        png_colorp palette;
+        int num_palette;
+
+        png_get_PLTE(png_ptr, info_ptr, &palette, &num_palette);
+
+        for (int y = 0; y < im->height; y++) {
+            for (int x = 0; x < im->width; x++) {
+                int palidx = row_pointers[y][x];
+                im->buf[y*im->stride + 3*x + 0] = palette[palidx].red;
+                im->buf[y*im->stride + 3*x + 1] = palette[palidx].green;
+                im->buf[y*im->stride + 3*x + 2] = palette[palidx].blue;
+            }
+        }
+
+        free(row_pointers);
+        free(buf);
         goto finish;
     }
 

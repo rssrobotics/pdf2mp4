@@ -7,12 +7,6 @@ $_REQUEST["key"] = sha1(rand().rand().rand().rand().rand().rand());
 
 include("common.php");
 
-function myflush()
-{
-    @ob_flush();
-    flush();
-}
-
 do_header("Creating new project");
 do_banner();
 myflush();

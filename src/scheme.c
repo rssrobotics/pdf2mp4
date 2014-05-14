@@ -902,6 +902,15 @@ static sobject_t* builtin_exp(scheme_t *scheme, sobject_t *env, sobject_t *head)
     return scheme_real_create(scheme, exp(scheme_first(scheme, head)->u.real.v));
 }
 
+static sobject_t* builtin_mod(scheme_t *scheme, sobject_t *env, sobject_t *head)
+{
+    SCHEME_TYPE_CHECK(scheme, scheme_first(scheme, head), "REAL");
+    SCHEME_TYPE_CHECK(scheme, scheme_second(scheme, head), "REAL");
+
+    return scheme_real_create(scheme, fmod(scheme_first(scheme, head)->u.real.v,
+                                           scheme_second(scheme, head)->u.real.v));
+}
+
 static sobject_t* builtin_floor(scheme_t *scheme, sobject_t *env, sobject_t *head)
 {
     SCHEME_TYPE_CHECK(scheme, scheme_first(scheme, head), "REAL");
@@ -1251,6 +1260,7 @@ void scheme_env_setup_basic(scheme_t *scheme, sobject_t *env)
     scheme_env_add_method(scheme, env, "fourth", builtin_fourth);
     scheme_env_add_method(scheme, env, "apply", builtin_apply);
     scheme_env_add_method(scheme, env, "output", builtin_output);
+    scheme_env_add_method(scheme, env, "mod", builtin_mod);
 
 }
 

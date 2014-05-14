@@ -49,8 +49,18 @@
 	))))
 
 ; load a movie using a folder full of ppm files living in dir 'path'
-(define (image-source-create-from-path path)
-  (wrap-native-objects (image-source-native 'create-from-path path)))
+; mode determines what happens when the length is longer than the
+; underlying clip--- do we 'loop or do we 'hold the last frame?
+(define (image-source-create-from-path length sourcefps mode path)
+  (letrec ((_is (wrap-native-objects (image-source-native 'create-from-path path))))
+    (lambda (message . args)
+      (case message
+	((length) (if (<= length 0) (/ (_is 'length) sourcefps)
+		                    length))
+	((get-frame) (if (eq? mode 'loop)
+			 (_is 'get-frame (mod (floor (* sourcefps (first args))) (_is 'length)))
+			 (_is 'get-frame (min (- (_is 'length) 1) (* sourcefps (first args))))))
+	))))
 
 ; duplicate a single frame 'length' times.
 (define (image-source-create-from-image len im)
@@ -59,7 +69,6 @@
       ((length) len)
       ((get-frame) im)
       )))
-
 
 (define (cache-create resolver capacity)
 
@@ -201,7 +210,7 @@
       ((get-frame)
        (letrec ((im (is 'get-frame (first args)))
 		(mark (/ (* (im 'get-width) (first args)) (is 'length)))
-		(alpha (/ 5 (/ (im 'get-width) (is 'length))))
+		(alpha (/ 1000 (im 'get-width)))
 		(pb (wrap-native-objects (image-native 'create-progress-bar (im 'get-width) height mark alpha rgb0 rgb1)))
 		)
 	 (im 'draw-image 0 y pb)))
@@ -241,8 +250,8 @@
 	)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (dump-video is)
-  (for-loop 0 (is 'length) 1
+(define (dump-video is dt)
+  (for-loop 0 (is 'length) dt
 	    (lambda (idx)
 	      (output "\nQQframe " idx " / " (is 'length) "QQ\n")
 	      ((is 'get-frame idx) 'output))))

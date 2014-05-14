@@ -52,41 +52,55 @@ $fd = fopen($projectscheme, "w");
 
 $totalseconds = 0;
 
+fprintf($fd, "(define crossfade-time 0.75)\n\n");
+
 for ($i = 0; $i < count($doc["slides"]); $i++) {
     $slide = $doc["slides"][$i];
 
-    $slidepath = $PROJECT_DIR."/".$slide[$slideselector];
+    if ($slide["type"] == "slide") {
+        $slidepath = $PROJECT_DIR."/".$slide[$slideselector];
 
-    fprintf($fd, "(define slide_$i \n");
-    fprintf($fd, "  (image-source-matte $w $h \"#000000\"\n");
-    fprintf($fd, "    (image-source-create-from-image-cache ".intval($fps*$slide["seconds"])." \"$slidepath\")))\n");
-//    fprintf($fd, "    (image-source-create-from-image ".intval($fps*$slide["seconds"])."\n");
-//    fprintf($fd, "      (image-create-from-file \"$PROJECT_DIR/".$slide[$slideselector]."\"))))\n");
+        fprintf($fd, "(define slide_$i \n");
+        fprintf($fd, "  (image-source-matte $w $h \"#000000\"\n");
+        fprintf($fd, "    (image-source-create-from-image-cache (+ crossfade-time ".floatval($slide["seconds"]).") \"$slidepath\")))\n");
 
-    if ($slide["progress"])
-        fprintf($fd, "(set! slide_$i (image-source-progress-bar -1 4 \"".$doc["progress_rgb"]."\" \"#000000\" slide_$i))\n");
+        if ($slide["progress"])
+            fprintf($fd, "(set! slide_$i (image-source-progress-bar -1 4 \"".$doc["progress_rgb"]."\" \"#000000\" slide_$i))\n");
 
-    fprintf($fd, "\n");
+        fprintf($fd, "\n");
+    } else if ($slide["type"] == "movie") {
+        fprintf($fd, "(define slide_$i \n");
+        fprintf($fd, "  (image-source-matte $w $h \"#000000\"\n");
+        fprintf($fd, "    (image-source-scale -1 $h\n");
+        fprintf($fd, "      (image-source-create-from-path ".$slide["seconds"]." ".$slide["playfps"]." ".$slide["mode"]." \"".$PROJECT_DIR."/".$slide["dir"]."/\"))))\n");
+
+        if ($slide["progress"])
+            fprintf($fd, "(set! slide_$i (image-source-progress-bar -1 4 \"".$doc["progress_rgb"]."\" \"#000000\" slide_$i))\n");
+
+        fprintf($fd, "\n");
+    } else {
+        // hmm, not supported?
+    }
 
     $totalseconds += $slide["seconds"];
 }
 
 fprintf($fd, "\n");
 
-fprintf($fd, "(define vid (crossfade-all ".intval(0.75*$fps)." (list\n");
+fprintf($fd, "(define vid (crossfade-all crossfade-time (list\n");
 
 for ($i = 0; $i < count($doc["slides"]); $i++) {
     fprintf($fd, "                               slide_$i\n");
 }
 
-fprintf($fd, "       (image-source-create-from-image ".intval(2*$fps)." (image-create $w $h \"#000000\")))))\n");
+fprintf($fd, "       (image-source-create-from-image 2 (image-create $w $h \"#000000\")))))\n");
 fprintf($fd, "\n");
 fprintf($fd, "\n");
 if ($doc["progress"])
     fprintf($fd, "(set! vid (image-source-progress-bar 0 4 \"".$doc["progress_rgb"]."\" \"#000000\" vid))\n");
 
 fprintf($fd, "\n");
-fprintf($fd, "(dump-video vid)\n");
+fprintf($fd, "(dump-video vid (/ 1.0 $fps))\n");
 
 fclose($fd);
 

@@ -116,8 +116,8 @@ function doc_set_display_idx(idx, scroll)
     navimg.className = "thumb_selected";
 
     if (scroll)
-	slidenav.scrollTop = navimg.offsetTop - navimg.offsetHeight;
-//    slidenav.scrollTop = navimg.offsetTop; //navimg.y; //300; //= navimg.offsetHeight;
+	    slidenav.scrollTop = navimg.offsetTop - navimg.offsetHeight;
+
 
     document.getElementById("current_slide_label").innerHTML = " "+(doc.display_idx+1)+" / "+doc.slides.length+" ";
 }
@@ -152,10 +152,11 @@ function doc_rebuild_gui()
             slide_nav.innerHTML += "<img id=slide_nav_"+i+" width="+(slide_nav.offsetWidth-40)+" class=thumb onclick='doc_set_display_idx("+i+", false)' src="+project_url+"/"+ slide.thumb + "><br><span class=slide_nav_time id=slide_nav_time_"+i+">"+slide.seconds+"</span>";
         }
 
-	window.onresize = function () {
-	    slide_nav.style.height = window.innerHeight * 0.8;
-	}
-	window.onresize();
+	    window.onresize = function () {
+	        slide_nav.style.height = window.innerHeight - 300;
+	    }
+
+	    window.onresize();
     }
 
     // don't require them to hit enter to get live updates
@@ -163,7 +164,7 @@ function doc_rebuild_gui()
         var f = parseFloat(document.getElementById("slide_seconds").value);
         if (isFinite(f)) {
             doc.slides[doc.display_idx].seconds = Math.max(0, f);
-	    document.getElementById("slide_nav_time_"+doc.display_idx).innerHTML=doc.slides[doc.display_idx].seconds;
+	        document.getElementById("slide_nav_time_"+doc.display_idx).innerHTML=doc.slides[doc.display_idx].seconds;
             doc_recompute_total_seconds();
         }
         doc_save();
@@ -200,21 +201,6 @@ function doc_rebuild_gui()
     document.getElementById("global_progress_bar").onclick = function() {
         doc.progress = document.getElementById("global_progress_bar").checked ? 1 : 0;
         doc_save();
-    }
-
-    document.getElementById("delete_button").onclick = function() {
-	if (doc.slides.length == 1) {
-	    alert("You can't delete the last slide");
-	    return;
-	}
-	
-	if (confirm("Really delete this slide? (There is no undo.)")) {
-	    doc.slides.splice(doc.display_idx, 1);
-	    if (doc.display_idx >= doc.slides.length)
-		doc.display_idx --;
-	    doc_rebuild_gui();
-	    doc_save();
-	}
     }
 
     doc_set_display_idx(doc.display_idx, true);
@@ -273,4 +259,25 @@ function move_next()
     doc.display_idx++;
     doc_rebuild_gui();
     doc_save();
+}
+
+function delete_slide()
+{
+	if (doc.slides.length == 1) {
+	    alert("You can't delete the last slide");
+	    return;
+	}
+
+	if (confirm("Really delete this slide? (There is no undo.)")) {
+	    doc.slides.splice(doc.display_idx, 1);
+	    if (doc.display_idx >= 1)
+		    doc.display_idx --;
+	    doc_rebuild_gui();
+	    doc_save();
+	}
+}
+
+function add_movie()
+{
+    document.location = "project_add_movie.php?key="+key+"&idx="+(doc.display_idx+1);
 }

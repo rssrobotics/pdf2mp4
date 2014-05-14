@@ -94,4 +94,10 @@ function str_starts_with($haystack, $needle)
     return $needle === "" || strpos($haystack, $needle) === 0;
 }
 
+function myflush()
+{
+    @ob_flush();
+    flush();
+}
+
 ?>

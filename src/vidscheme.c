@@ -42,7 +42,7 @@ image_source_t *image_source_create(const char *path)
     image_source_t *is = calloc(1, sizeof(image_source_t));
     is->paths = zarray_create(sizeof(char*));
 
-    char *suffixes[] = { ".ppm", ".pnm", NULL };
+    char *suffixes[] = { ".ppm", ".pnm", ".png", NULL };
 
     DIR *dir = opendir(path);
     struct dirent *dirent;
@@ -142,12 +142,6 @@ static sobject_t *builtin_image_source_native(scheme_t *scheme, sobject_t *env, 
         return scheme_image_source_create(scheme, is);
     }
 
-/*    if (!strcmp(msg, "create-from-path-cache")) {
-        SCHEME_TYPE_CHECK(scheme, scheme_second(scheme, head), "STRING");
-        image_source_t *is = image_source_create(scheme_second(scheme, head)->u.string.v);
-        return scheme_image_source_create(scheme, is);
-    }
-*/
     // instance methods always take a second argument, an image.
     SCHEME_TYPE_CHECK(scheme, scheme_second(scheme, head), "IMAGE_SOURCE");
     image_source_t *is = (image_source_t*) scheme_second(scheme, head)->u.other.impl;
@@ -166,7 +160,7 @@ static sobject_t *builtin_image_source_native(scheme_t *scheme, sobject_t *env, 
 
         char *path;
         zarray_get(is->paths, idx, &path);
-        image_u8x3_t *im = image_u8x3_create_from_pnm(path);
+        image_u8x3_t *im = image_u8x3_create_from_file(path);
 
         return scheme_image_create(scheme, im);
     }
@@ -317,6 +311,7 @@ static sobject_t *builtin_image_native(scheme_t *scheme, sobject_t *env, sobject
     }
 
     if (1 && !strcmp(msg, "output")) {
+
         fprintf(stdout, "P6\n%d %d\n255\n", im->width, im->height);
         int linesz = im->width * 3;
         for (int y = 0; y < im->height; y++) {
@@ -326,6 +321,7 @@ static sobject_t *builtin_image_native(scheme_t *scheme, sobject_t *env, sobject
         }
 
         fflush(stdout);
+
         return SOBJECT_TRUE;
     }
 
