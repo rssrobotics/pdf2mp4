@@ -34,6 +34,7 @@ validate_key($key);
 <span onclick='move_next()'><img src=move_next.png></span>
 
 	<img id=delete_button src=delete.png>
+	<img id=delete_button src=add_movie.png>
 
 <br><br>
 	Slide duration: <input type=text id=slide_seconds size=5> seconds (used <span id=total_seconds>0</span> of <span id=maxtime_span></span> allowed)<br><br>
