@@ -202,6 +202,21 @@ function doc_rebuild_gui()
         doc_save();
     }
 
+    document.getElementById("delete_button").onclick = function() {
+	if (doc.slides.length == 1) {
+	    alert("You can't delete the last slide");
+	    return;
+	}
+	
+	if (confirm("Really delete this slide? (There is no undo.)")) {
+	    doc.slides.splice(doc.display_idx, 1);
+	    if (doc.display_idx >= doc.slides.length)
+		doc.display_idx --;
+	    doc_rebuild_gui();
+	    doc_save();
+	}
+    }
+
     doc_set_display_idx(doc.display_idx, true);
     doc_recompute_total_seconds();
 
