@@ -1,0 +1,7 @@
+* limit movie upload size
+
+* delete movie folders when the slide is removed
+
+* add a notice that inactive projects will be deleted
+
+* add a prettier "rendering" button when download is not yet available (queuwater.php)
