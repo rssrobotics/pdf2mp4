@@ -8,6 +8,7 @@ do_banner();
 validate_key($key);
 
 $MOVIE_NAME = "video_".sha1(rand().rand().rand().rand());
+$MAX_FRAMES = 3000;
 
 $MOVIE_DIR = $PROJECT_DIR."/".$MOVIE_NAME;
 mkdir($MOVIE_DIR);
@@ -16,7 +17,7 @@ print "<h2>Movie import status</h2>";
 
 print "File uploaded succeeded....<br><br>\n";
 
-print "Detecting frame rate...";
+print "Detecting frame rate and duration...";
 
 if (1) {
     $fd = popen("avprobe ".$_FILES['moviefile']['tmp_name']." 2>&1", "r");
@@ -27,20 +28,31 @@ if (1) {
     }
 
     $fps = -1;
+    $seconds = 99999;
 
     while (!feof($fd)) {
         $s = fgets($fd);
-        if (preg_match('/, ([0-9]+[.]?[9-9]*) fps,/', $s, $matches)) {
+        if (preg_match('/, ([0-9]+[.]?[0-9]*) fps,/', $s, $matches)) {
             $fps = $matches[1];
         }
+        if (preg_match('/Duration: ([0-9]+):([0-9]+):([0-9]+).([0-9]+),/', $s, $matches)) {
+            $seconds = floatval($matches[4] / 100) + floatval($matches[3]) + floatval($matches[2])*60 + floatval($matches[1])*3600;
+        }
+
     }
     fclose($fd);
-    if ($fps > 0) {
-        print "... detected $fps fps";
+
+   if ($fps > 0) {
+        print "... detected $fps fps, duration $seconds seconds.";
     } else {
         print "... hmmm, I couldn't process this video. Is it an MP4?";
         die();
     }
+
+   if ($fps * $seconds > $MAX_FRAMES) {
+       print "This movie has more than $MAX_FRAMES frames, which is not allowed.";
+       die();
+   }
 }
 
 print "<h3>Extracting frames... (this can take minutes)</h3><br><br>\n";
