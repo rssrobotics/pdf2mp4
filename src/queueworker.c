@@ -196,9 +196,6 @@ int main(int argc, char *argv[])
                 goto error_unlock;
             }
 
-            // the best job
-            zarray_t *jobs = zarray_create(sizeof(job_t*));
-
             struct dirent *dirent;
             while ((dirent = readdir(dir)) != NULL) {
                 if (dirent->d_name[0] != 'j')
@@ -209,28 +206,23 @@ int main(int argc, char *argv[])
                 if (newjob == NULL)
                     continue;
 
-                zarray_add(jobs, &newjob);
-                if (newjob->status[0]!='q')
+                if (newjob->status[0] != 'q') {
+                    job_destroy(newjob);
                     continue;
+                }
 
                 if (job == NULL ||
                     newjob->pri < job->pri ||
                     (newjob->pri == job->pri && newjob->time < job->time)) {
 
+                    job_destroy(job);
                     job = newjob;
+                } else {
+                    job_destroy(newjob);
                 }
             }
 
             closedir(dir);
-
-            for (int i = 0; i < zarray_size(jobs); i++) {
-                job_t *thisjob;
-                zarray_get(jobs, i, &thisjob);
-                if (thisjob != job)
-                    job_destroy(thisjob);
-            }
-
-            zarray_destroy(jobs);
 
             if (job == NULL) {
                 goto error_unlock;
@@ -258,7 +250,7 @@ int main(int argc, char *argv[])
         /////////////////////////////////////////////////////////
         // handle the queue item
         printf("===================================================\n");
-        printf("Processing queue item '%s'...\n", ppath);
+        printf("Processing queue item '%s'...\n", qpath);
 
         int64_t utime0 = utime_now();
 
