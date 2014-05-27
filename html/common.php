@@ -1,21 +1,15 @@
 <?php
 
+$key = $_REQUEST["key"];
+
 $PROJECTS_PATH="/var/www/pdf2mp4/html/projects";
 $PROJECTS_URL="http://".$_SERVER["SERVER_ADDR"]."/projects";
 
-$PROJECT_URL = $PROJECTS_URL."/".$key;
 $PROJECT_DIR = $PROJECTS_PATH."/".$key;
-$PROJECT_JSON = $PROJECT_DIR."/"."project.json";
+$PROJECT_JSON = $PROJECT_DIR."/"."json.txt";
+$PROJECT_URL = $PROJECTS_URL."/".$key;
 
 $QUEUE_DIR = "/var/www/pdf2mp4/queue/";
-
-//$PREVIEW_HEIGHT = 320;
-//$PREVIEW_FPS = 1;
-
-//$FINAL_HEIGHT = 1200;
-//$FINAL_FPS = 30;
-
-//$MAX_MOVIE_SECONDS = 300;
 
 function do_header($name)
 {
@@ -31,12 +25,6 @@ print "<html><head><title>$name</title>";
 
 <?php
 }
-
-$key = $_REQUEST["key"];
-
-$PROJECT_DIR = $PROJECTS_PATH."/".$key;
-$PROJECT_JSON = $PROJECT_DIR."/"."json.txt";
-$PROJECT_URL = $PROJECTS_URL."/".$key;
 
 function validate_new_key($key)
 {

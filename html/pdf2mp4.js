@@ -312,11 +312,28 @@ function delete_slide()
 	}
 
 	if (confirm("Really delete this slide? (There is no undo.)")) {
+
+        var slide = doc.slides[doc.display_idx];
+
 	    doc.slides.splice(doc.display_idx, 1);
 	    if (doc.display_idx >= 1)
 		    doc.display_idx --;
 	    doc_rebuild_gui();
 	    doc_save();
+
+        if (slide.type=="movie") {
+            xmlhttp_post("project_delete_movie.php?key="+doc.key+"&movie="+slide.dir, "",
+                         function(xml, url) {
+                             try {
+                                 var resp = JSON.parse(xml.responseText);
+                                 if (resp != "OK") {
+                                     alert("Error deleting slide: "+resp);
+                                 }
+                             } catch (ex) {
+                                 alert("hmm: "+ex);
+                             }
+                         });
+        }
 	}
 }
 
