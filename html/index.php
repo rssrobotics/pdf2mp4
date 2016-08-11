@@ -6,6 +6,8 @@ do_banner();
 
 ?>
 
+<?php include("googlead.php"); ?>
+
 <center>
 <table>
 <tr><td width=50% valign=top class=topmenu><h2>Create a new project</h2></P>

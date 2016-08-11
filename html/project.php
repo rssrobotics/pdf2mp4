@@ -9,6 +9,8 @@ validate_key($key);
 
 ?>
 
+<?php include("googlead.php"); ?>
+
 <!-- the primary slide display area with the larger thumbnail and arrow controls -->
 <center>
   <table border=0 width=100%>
