@@ -3,7 +3,7 @@
 $key = $_REQUEST["key"];
 
 $PROJECTS_PATH="/var/www/pdf2mp4/html/projects";
-$PROJECTS_URL="http://".$_SERVER["SERVER_ADDR"]."/projects";
+$PROJECTS_URL="http://".$_SERVER["SERVER_NAME"]."/projects";
 
 $PROJECT_DIR = $PROJECTS_PATH."/".$key;
 $PROJECT_JSON = $PROJECT_DIR."/"."json.txt";

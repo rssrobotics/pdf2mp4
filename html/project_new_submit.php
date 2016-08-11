@@ -42,13 +42,13 @@ print "File uploaded succeeded....<br>\n";
 myflush();
 
 $profile = $_REQUEST["profile"];
-$profile_terms = split(";", $profile);
+$profile_terms = explode(";", $profile);
 
 $profile_hash = array();
 
 for ($i = 0; $i < count($profile_terms); $i++) {
     $term = $profile_terms[$i];
-    $kv = split("=", $term);
+    $kv = explode("=", $term);
     if (count($kv)==2) {
         print "<script>doc[\"".$kv[0]."\"] = ".floatval($kv[1]).";</script>\n";
         $profile_hash[$kv[0]] = intval($kv[1]);

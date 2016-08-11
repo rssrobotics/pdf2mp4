@@ -14,7 +14,8 @@ do_banner();
 
 Preset:
 <select name="profile">
-<option value="height=1080;aspect=1.777;pheight=320;fps=30;pfps=1;bitrate=8000000;pbitrate=2000000;maxtime=300">RSS 2014 (1080p), 300 seconds</option>
+<option value="height=1080;aspect=1.777;pheight=320;fps=30;pfps=1;bitrate=8000000;pbitrate=2000000;maxtime=300">1920x1080, 300 seconds</option>
+<option value="height=1080;aspect=1.333;pheight=320;fps=30;pfps=1;bitrate=8000000;pbitrate=2000000;maxtime=300">1440x1080, 300 seconds</option>
 </select><br><br>
     PDF: <input type=file size=50 name=pdffile accept='.pdf'><br>
     <font size=-1>(Maximum size 100MB)</font><br><br>
