@@ -1,25 +1,35 @@
+# Install dependencies
+
 sudo apt update
 sudo apt upgrade
-sudo apt install git make gcc pkg-config libpng12-dev poppler-utils libav-tools apache2 libapache2-mod-php build-essential
+sudo apt install git make gcc pkg-config libpng12-dev poppler-utils libav-tools apache2 php5 libapache2-mod-php5 build-essential
 sudo apt install emacs
 
-git clone git@umbrella.eecs.umich.edu:ebolson/pdf2mp4.git /var/www/pdf2mp4
+# Clone and set up pdf2mp4
 
-sudo mkdir -p /var/www/pdf2mp4/queue
-sudo mkdir -p /var/www/pdf2mp4/html/projects
-sudo chown www-data /var/www/pdf2mp4/queue
-sudo chown www-data /var/www/pdf2mp4/html/projects
+PDF2MP4=/var/www/pdf2mp4
 
-cd $HOME/pdf2mp4
-cp pdf2mp4.conf /etc/apache2/sites-enabled/
+git clone https://umbrella.eecs.umich.edu/ebolson/pdf2mp4.git $PDF2MP4
 
+sudo mkdir -p $PDF2MP4/queue
+sudo mkdir -p $PDF2MP4/html/projects
+sudo chown www-data $PDF2MP4/queue
+sudo chown www-data $PDF2MP4/html/projects
 
-#-set PHP max upload file size in /etc/php/7.0/apache2/php.ini
-#
-#upload_max_filesize = 2M -> upload_max_filesize = 300M
-#post_max_size = 8M -> post_max_size = 300M
+sudo cp $PDF2MP4/pdf2mp4.conf /etc/apache2/sites-available/
+sudo ln -s /etc/apache2/sites-available/pdf2mp4.conf /etc/apache2/sites-enabled/
 
-sudo service apache2 restart
+# Set PHP max upload file size in /etc/php/7.0/apache2/php.ini
+# upload_max_filesize = 2M -> upload_max_filesize = 300M
+# post_max_size = 8M -> post_max_size = 300M
+
+# Compile and launch queue workers
+cd $PDF2MP4/src
+sudo make
+screen -S w0 -d -m sudo ./queueworker
+# Detach screen (C-a d)
+
+# Remove default apache site and restart
 
 sudo rm /etc/apache2/sites-enabled/000-default.conf
-
+sudo service apache2 restart
