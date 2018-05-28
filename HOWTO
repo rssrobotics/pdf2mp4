@@ -16,6 +16,7 @@ sudo mkdir -p $PDF2MP4/html/projects
 sudo chown www-data $PDF2MP4/queue
 sudo chown www-data $PDF2MP4/html/projects
 
+# MODIFY THE CONF FILE to use your website name
 sudo cp $PDF2MP4/pdf2mp4.conf /etc/apache2/sites-available/
 sudo ln -s /etc/apache2/sites-available/pdf2mp4.conf /etc/apache2/sites-enabled/
 
