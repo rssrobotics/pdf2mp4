@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <math.h>
 #include <stdarg.h>
+#include <limits.h>
+#include <float.h>
 
 #include "scheme.h"
 #include "zhash.h"
@@ -1088,7 +1090,7 @@ static sobject_t* builtin_divide(scheme_t *scheme, sobject_t *env, sobject_t *he
 
 static sobject_t* builtin_min(scheme_t *scheme, sobject_t *env, sobject_t *head)
 {
-    double acc = HUGE;
+    double acc = (double) DBL_MAX;
     for ( ; head != NULL; head = scheme_rest(scheme, head)) {
         sobject_t *obj = scheme_first(scheme, head);
         SCHEME_TYPE_CHECK(scheme, obj, "REAL");
@@ -1101,7 +1103,7 @@ static sobject_t* builtin_min(scheme_t *scheme, sobject_t *env, sobject_t *head)
 
 static sobject_t* builtin_max(scheme_t *scheme, sobject_t *env, sobject_t *head)
 {
-    double acc = -HUGE;
+    double acc = -(double) DBL_MAX;
     for ( ; head != NULL; head = scheme_rest(scheme, head)) {
         sobject_t *obj = scheme_first(scheme, head);
         SCHEME_TYPE_CHECK(scheme, obj, "REAL");

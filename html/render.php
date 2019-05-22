@@ -119,6 +119,7 @@ system("rm -rf $PROJECT_DIR/$taskbase*.mp4");
 system("rm -rf $QUEUE_DIR/j*_$key_$taskbase*.q");
 
 $fd = fopen($queuepath_tmp, "w");
+
 if (!$fd) {
     print "<h2>Failed to create queue file</h2>";
     die();
@@ -126,7 +127,7 @@ if (!$fd) {
 
 fwrite($fd, "#!/bin/bash\n\n");
 $VSPATH="/var/www/pdf2mp4/src/";
-fwrite($fd, "$VSPATH/vidscheme $VSPATH/vidscheme.scheme $projectscheme | avconv -y -r $fps -f image2pipe -vcodec ppm -i - -b:v $bitrate $outputpath");
+fwrite($fd, "$VSPATH/vidscheme $VSPATH/vidscheme.scheme $projectscheme | ffmpeg -y -r $fps -f image2pipe -vcodec ppm -i - -b:v $bitrate $outputpath");
 fclose($fd);
 
 chmod($queuepath_tmp, 0755);

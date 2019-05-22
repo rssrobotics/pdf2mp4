@@ -38,7 +38,7 @@ doc.key = "<?php print $key ?>";
 
 print "<h2>Project creation status</h2>";
 
-print "File uploaded succeeded....<br>\n";
+print "File upload succeeded....<br>\n";
 myflush();
 
 $profile = $_REQUEST["profile"];

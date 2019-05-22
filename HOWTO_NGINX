@@ -1,0 +1,34 @@
+# Install dependencies
+
+sudo apt update
+sudo apt upgrade
+sudo apt install make gcc pkg-config libpng12-dev poppler-utils libav-tools build-essential <nginx> <php-fpm>
+sudo apt install emacs
+
+# Clone and set up pdf2mp4
+
+PDF2MP4=/var/www/pdf2mp4
+
+git clone https://github.com/rssrobotics/pdf2mp4.git $PDF2MP4
+
+sudo mkdir -p $PDF2MP4/queue
+sudo mkdir -p $PDF2MP4/html/projects
+sudo chown www-data $PDF2MP4/queue
+sudo chown www-data $PDF2MP4/html/projects
+
+# MODIFY THE CONF FILE to use your website name
+sudo cp $PDF2MP4/pdf2mp4_nginx /etc/nginx/sites-available/
+sudo ln -s /etc/nginx/sites-available/pdf2mp4_nginx /etc/nginx/sites-enabled/
+
+# Set PHP max upload file size in /etc/php/7.2/fpm/php.ini
+# upload_max_filesize = 2M -> upload_max_filesize = 300M
+# post_max_size = 8M -> post_max_size = 300M
+
+# Compile and launch queue workers
+cd $PDF2MP4/src
+sudo make
+screen -S w0 -d -m sudo ./queueworker
+# Detach screen (C-a d)
+
+# Restart
+sudo service nginx restart
