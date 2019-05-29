@@ -9,7 +9,7 @@ validate_key($key);
 
 ?>
 
-<?php include("googlead.php"); ?>
+<!--<?php include("googlead.php"); ?>-->
 
 <!-- the primary slide display area with the larger thumbnail and arrow controls -->
 <center>

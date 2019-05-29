@@ -20,7 +20,7 @@ print "File uploaded succeeded....<br><br>\n";
 print "Detecting frame rate and duration...";
 
 if (1) {
-    $fd = popen("avprobe ".$_FILES['moviefile']['tmp_name']." 2>&1", "r");
+    $fd = popen("ffprobe ".$_FILES['moviefile']['tmp_name']." 2>&1", "r");
 
     if (!$fd) {
         print "failed to open downloaded file";
@@ -59,7 +59,7 @@ print "<h3>Extracting frames... (this can take minutes)</h3><br><br>\n";
 
 myflush();
 
-system("avconv -i ".$_FILES['moviefile']['tmp_name']." -f image2 $MOVIE_DIR/frame%08d.png");
+system("ffmpeg -i ".$_FILES['moviefile']['tmp_name']." -f image2 $MOVIE_DIR/frame%08d.png");
 
 $frames = array();
 $dir = opendir($MOVIE_DIR);

@@ -31,4 +31,5 @@ screen -S w0 -d -m sudo ./queueworker
 # Detach screen (C-a d)
 
 # Restart
+sudo service php7.2-fpm restart
 sudo service nginx restart
