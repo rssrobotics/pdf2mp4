@@ -321,19 +321,19 @@ function delete_slide()
 	    doc_rebuild_gui();
 	    doc_save();
 
-        if (slide.type=="movie") {
-            xmlhttp_post("project_delete_movie.php?key="+doc.key+"&movie="+slide.dir, "",
-                         function(xml, url) {
-                             try {
-                                 var resp = JSON.parse(xml.responseText);
-                                 if (resp != "OK") {
-                                     alert("Error deleting slide: "+resp);
-                                 }
-                             } catch (ex) {
-                                 alert("hmm: "+ex);
-                             }
-                         });
-        }
+        //if (slide.type=="movie") {
+        //    xmlhttp_post("project_delete_movie.php?key="+doc.key+"&movie="+slide.dir, "",
+        //                 function(xml, url) {
+        //                     try {
+        //                         var resp = JSON.parse(xml.responseText);
+        //                         if (resp != "OK") {
+        //                             alert("Error deleting slide: "+resp);
+        //                         }
+        //                     } catch (ex) {
+        //                         alert("hmm: "+ex);
+        //                     }
+        //                 });
+        //}
 	}
 }
 
