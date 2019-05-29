@@ -2,7 +2,7 @@
 
 sudo apt update
 sudo apt upgrade
-sudo apt install make gcc pkg-config libpng12-dev poppler-utils libav-tools build-essential <nginx> <php-fpm>
+sudo apt install make gcc pkg-config libpng12-dev poppler-utils ffmpeg build-essential nginx php-fpm
 sudo apt install emacs
 
 # Clone and set up pdf2mp4

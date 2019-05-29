@@ -6,7 +6,9 @@ do_banner();
 
 ?>
 
-<?php include("googlead.php"); ?>
+<?php
+#include("googlead.php");
+?>
 
 <center>
 <table>
